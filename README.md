@@ -56,8 +56,6 @@ yarn build
 - **View** — отображение интерфейса пользователя
 - **Presenter** — координация между Model и View через брокер событий
 
-![UML Схема](/UML.jpg)
-
 ## Описание базовых классов
 
 ### Класс EventEmitter
@@ -122,7 +120,7 @@ type EventName = string | RegExp;
 
 ``` TypeScript
 class Card {
-  // Идентификатор
+  // Идентификатор карточки (товара)
   protected id: string;
 
   // Ссылка на картинку товара
@@ -144,7 +142,7 @@ class Card {
 }
 ```
 
-Класс контейнера со списком товаров имеет следующие поля и методы:
+Класс контейнера со списком товаров:
 
 ``` TypeScript
 class CardList {
@@ -236,6 +234,15 @@ class OrderForm {
   // Возвращает: boolean (true, если текущий шаг формы валиден, false - если есть ошибки)
   validateStep(): boolean;
 
+  // Показать сообщение об ошибке
+  // Принимает: message — текст ошибки
+  // Возвращает: void
+  showError(message: string): void;
+
+  // Скрыть сообщение об ошибке
+  // Возвращает: void
+  hideError(): void;
+
   // Метод для валидации конкретного поля формы
   // Принимает: field — название поля для валидации
   // Возвращает: boolean (true, если поле валидно, false - если есть ошибки)
@@ -256,93 +263,15 @@ class OrderForm {
 ``` TypeScript
 class OrderSuccess {
   // Общая стоимость заказа
-  protected totalPrice: number;
+  protected totalPrice: Price;
 
   // Метод для установки общей стоимости
   // Возвращает: void (ничего не возвращает)
-  setTotalPrice(price: number): void;
+  setTotalPrice(price: Price): void;
 
   // Метод для получения общей стоимости
   // Возвращает: number (общую стоимость заказа)
-  getTotalPrice(): number;
-}
-```
-
-Главный класс для управления состоянием всего приложения:
-
-``` TypeScript
-class AppState {
-  // Экземпляры всех классов
-  protected cardList: CardList;
-  protected basket: Basket;
-  protected orderForm: OrderForm;
-  protected orderSuccess: OrderSuccess;
-
-  // Методы для работы с каталогом товаров
-  // Загружает каталог товаров с сервера
-  // Возвращает: Promise<void> (промис, который разрешается после загрузки)
-  loadCatalog(): Promise<void>;
-
-  // Получает все товары из каталога
-  // Возвращает: ICard[] (массив всех товаров в каталоге)
-  getCatalog(): ICard[];
-
-  // Методы для работы с корзиной
-  // Добавляет товар в корзину
-  // Возвращает: void (ничего не возвращает)
-  addToBasket(card: ICard): void;
-
-  // Удаляет товар из корзины по ID
-  // Возвращает: void (ничего не возвращает)
-  removeFromBasket(id: string): void;
-
-  // Получает все товары в корзине
-  // Возвращает: ICard[] (массив всех товаров в корзине)
-  getBasketItems(): ICard[];
-
-  // Получает общую стоимость товаров в корзине
-  // Возвращает: Price (общую стоимость или null)
-  getBasketTotal(): Price;
-
-  // Методы для работы с заказом
-  // Обновляет данные формы заказа
-  // Возвращает: void (ничего не возвращает)
-  updateOrderForm(data: Partial<IOrderForm>): void;
-
-  // Отправляет заказ на сервер
-  // Возвращает: Promise<IOrderSuccess> (промис с результатом заказа)
-  submitOrder(): Promise<IOrderSuccess>;
-}
-```
-
-### События приложения
-
-События используются для связи между компонентами через брокер EventEmitter:
-
-- `CARD_SELECTED` - товар выбран для просмотра (данные: ICardSelectedEvent)
-- `CARD_ADDED_TO_BASKET` - товар добавлен в корзину (данные: ICardBasketEvent)
-- `CARD_REMOVED_FROM_BASKET` - товар удален из корзины (данные: ICardBasketEvent)
-- `BASKET_UPDATED` - корзина обновлена (данные: IBasketUpdatedEvent)
-- `ORDER_STEP_COMPLETED` - шаг заказа завершен (данные: IOrderStepEvent)
-- `ORDER_SUBMITTED` - заказ отправлен (данные: IOrderSubmittedEvent)
-- `MODAL_OPENED` - модальное окно открыто (данные: IModalEvent)
-- `MODAL_CLOSED` - модальное окно закрыто (данные: IModalEvent)
-
-
-### Классы для API, событий и представлений
-
-Класс API-клиента для работы с сервером:
-
-``` TypeScript
-class Api {
-  // Получить список товаров с сервера
-  // Возвращает: Promise<ICard[]> (промис с массивом карточек товаров)
-  getProducts(): Promise<ICard[]>;
-
-  // Отправить заказ на сервер
-  // Принимает: order — объект заказа
-  // Возвращает: Promise<IOrderSuccess> (промис с результатом заказа)
-  submitOrder(order: IOrderForm): Promise<IOrderSuccess>;
+  getTotalPrice(): Price;
 }
 ```
 
@@ -381,135 +310,137 @@ class EventEmitter {
 }
 ```
 
-Класс представления карточки товара:
+Класс базового компонента для всех элементов интерфейса:
 
 ``` TypeScript
-class CardView {
-  // Установить данные карточки
-  // Принимает: card — объект карточки
-  // Возвращает: void
-  setCard(card: ICard): void;
+class Component<T> {
+  // Контейнер компонента
+  protected readonly container: HTMLElement;
 
-  // Отобразить карточку
-  // Возвращает: HTMLElement (DOM-элемент карточки)
-  render(): HTMLElement;
+  // Конструктор класса
+  // Принимает: container — DOM-элемент контейнера
+  protected constructor(container: HTMLElement);
 
-  // Подписка на событие "Купить"
-  // Принимает: callback — функция-обработчик
+  // Переключить CSS класс элемента
+  // Принимает: element — DOM-элемент, className — название класса, force — принудительное состояние
   // Возвращает: void
-  onBuy(callback: () => void): void;
+  toggleClass(element: HTMLElement, className: string, force?: boolean): void;
 
-  // Подписка на событие "Убрать"
-  // Принимает: callback — функция-обработчик
+  // Установить текстовое содержимое элемента
+  // Принимает: element — DOM-элемент, value — значение для установки
   // Возвращает: void
-  onRemove(callback: () => void): void;
+  protected setText(element: HTMLElement, value: unknown): void;
+
+  // Сменить статус блокировки элемента
+  // Принимает: element — DOM-элемент, state — состояние блокировки
+  // Возвращает: void
+  setDisabled(element: HTMLElement, state: boolean): void;
+
+  // Скрыть элемент
+  // Принимает: element — DOM-элемент
+  // Возвращает: void
+  protected setHidden(element: HTMLElement): void;
+
+  // Показать элемент
+  // Принимает: element — DOM-элемент
+  // Возвращает: void
+  protected setVisible(element: HTMLElement): void;
+
+  // Установить изображение с альтернативным текстом
+  // Принимает: element — элемент изображения, src — источник, alt — альтернативный текст
+  // Возвращает: void
+  protected setImage(element: HTMLImageElement, src: string, alt?: string): void;
+
+  // Отобразить компонент
+  // Принимает: data — данные для рендеринга
+  // Возвращает: HTMLElement (DOM-элемент компонента)
+  render(data?: Partial<T>): HTMLElement;
 }
 ```
 
-Класс представления каталога товаров:
+### События приложения
+
+События используются для связи между компонентами через брокер EventEmitter:
+
+- `CARD_SELECTED` - товар выбран для просмотра (данные: ICardSelectedEvent)
+- `CARD_ADDED_TO_BASKET` - товар добавлен в корзину (данные: ICardBasketEvent)
+- `CARD_REMOVED_FROM_BASKET` - товар удален из корзины (данные: ICardBasketEvent)
+- `BASKET_UPDATED` - корзина обновлена (данные: IBasketUpdatedEvent)
+- `ORDER_STEP_COMPLETED` - шаг заказа завершен (данные: IOrderStepEvent)
+- `ORDER_SUBMITTED` - заказ отправлен (данные: IOrderSubmittedEvent)
+- `MODAL_OPENED` - модальное окно открыто (данные: IModalEvent)
+- `MODAL_CLOSED` - модальное окно закрыто (данные: IModalEvent)
+
+
+### Интерфейсы событий
 
 ``` TypeScript
-class CatalogView {
-  // Установить список карточек
-  // Принимает: cards — массив карточек
-  // Возвращает: void
-  setCards(cards: ICard[]): void;
+// Событие выбора карточки товара
+interface ICardSelectedEvent {
+  cardId: string;
+}
 
-  // Отобразить каталог
-  // Возвращает: HTMLElement (DOM-элемент каталога)
-  render(): HTMLElement;
+// Событие добавления/удаления товара из корзины
+interface ICardBasketEvent {
+  card: ICard;
+}
 
-  // Подписка на клик по карточке
-  // Принимает: callback — функция-обработчик, принимает id карточки
-  // Возвращает: void
-  onCardClick(callback: (cardId: string) => void): void;
+// Событие обновления корзины
+interface IBasketUpdatedEvent {
+  items: ICard[];
+  totalPrice: Price;
+}
+
+// Событие завершения шага заказа
+interface IOrderStepEvent {
+  step: number;
+  isValid: boolean;
+}
+
+// Событие отправки заказа
+interface IOrderSubmittedEvent {
+  order: IOrderForm;
+  result: IOrderSuccess;
+}
+
+// Событие модального окна
+interface IModalEvent {
+  content: HTMLElement;
 }
 ```
 
-Класс представление корзины:
+Класс API-клиента для работы с сервером:
 
 ``` TypeScript
-class BasketView {
-  // Установить товары в корзине
-  // Принимает: items — массив карточек
-  // Возвращает: void
-  setItems(items: ICard[]): void;
+class Api {
+  // Базовый URL для API запросов
+  readonly baseUrl: string;
 
-  // Установить итоговую стоимость
-  // Принимает: price — итоговая стоимость
-  // Возвращает: void
-  setTotalPrice(price: Price): void;
+  // Опции для HTTP запросов
+  protected options: RequestInit;
 
-  // Отобразить корзину
-  // Возвращает: HTMLElement (DOM-элемент корзины)
-  render(): HTMLElement;
+  // Конструктор класса
+  // Принимает: baseUrl — базовый URL API, options — опции запросов
+  constructor(baseUrl: string, options: RequestInit = {});
 
-  // Подписка на удаление товара
-  // Принимает: callback — функция-обработчик, принимает id карточки
-  // Возвращает: void
-  onRemoveItem(callback: (cardId: string) => void): void;
+  // Получить список товаров с сервера
+  // Возвращает: Promise<ICard[]> (промис с массивом карточек товаров)
+  getProducts(): Promise<ICard[]>;
 
-  // Подписка на оформление заказа
-  // Принимает: callback — функция-обработчик
-  // Возвращает: void
-  onCheckout(callback: () => void): void;
-}
-```
+  // Отправить заказ на сервер
+  // Принимает: order — объект заказа
+  // Возвращает: Promise<IOrderSuccess> (промис с результатом заказа)
+  submitOrder(order: IOrderForm): Promise<IOrderSuccess>;
 
-Класс представления модального окна:
+  // Выполнить GET запрос
+  // Принимает: uri — путь запроса
+  // Возвращает: Promise<object> (промис с ответом сервера)
+  get(uri: string): Promise<object>;
 
-``` TypeScript
-class ModalView {
-  // Установить содержимое модального окна
-  // Принимает: content — DOM-элемент содержимого
-  // Возвращает: void
-  setContent(content: HTMLElement): void;
-
-  // Показать модальное окно
-  // Возвращает: void
-  show(): void;
-
-  // Скрыть модальное окно
-  // Возвращает: void
-  hide(): void;
-
-  // Подписка на закрытие окна
-  // Принимает: callback — функция-обработчик
-  // Возвращает: void
-  onClose(callback: () => void): void;
-}
-```
-
-Класс представления формы заказа:
-
-``` TypeScript
-class OrderFormView {
-  // Установить данные формы заказа
-  // Принимает: data — объект формы заказа
-  // Возвращает: void
-  setFormData(data: IOrderForm): void;
-
-  // Отобразить форму
-  // Возвращает: HTMLElement (DOM-элемент формы)
-  render(): HTMLElement;
-
-  // Подписка на переход к следующему шагу
-  // Принимает: callback — функция-обработчик
-  // Возвращает: void
-  onNextStep(callback: () => void): void;
-
-  // Валидация формы
-  // Возвращает: boolean (true, если форма валидна)
-  validate(): boolean;
-
-  // Показать сообщение об ошибке
-  // Принимает: message — текст ошибки
-  // Возвращает: void
-  showError(message: string): void;
-
-  // Скрыть сообщение об ошибке
-  // Возвращает: void
-  hideError(): void;
+  // Выполнить POST запрос
+  // Принимает: uri — путь запроса, data — данные для отправки, method — метод HTTP
+  // Возвращает: Promise<object> (промис с ответом сервера)
+  post(uri: string, data: object, method: ApiPostMethods = 'POST'): Promise<object>;
 }
 ```
 
@@ -530,5 +461,97 @@ class OrderSuccessView {
   // Принимает: callback — функция-обработчик
   // Возвращает: void
   onContinueShopping(callback: () => void): void;
+}
+```
+
+### Интерфейсы представлений
+
+``` TypeScript
+// Базовый интерфейс для всех представлений
+interface IView {
+  render(): HTMLElement;
+}
+
+// Интерфейс представления карточки товара
+interface ICardView extends IView {
+  setCard(card: ICard): void;
+  onBuy(callback: () => void): void;
+  onRemove(callback: () => void): void;
+}
+
+// Интерфейс представления каталога товаров
+interface ICatalogView extends IView {
+  setCards(cards: ICard[]): void;
+  onCardClick(callback: (cardId: string) => void): void;
+}
+
+// Интерфейс представления корзины
+interface IBasketView extends IView {
+  setItems(items: ICard[]): void;
+  setTotalPrice(price: Price): void;
+  onRemoveItem(callback: (cardId: string) => void): void;
+  onCheckout(callback: () => void): void;
+}
+
+// Интерфейс представления модального окна
+interface IModalView extends IView {
+  setContent(content: HTMLElement): void;
+  show(): void;
+  hide(): void;
+  onClose(callback: () => void): void;
+}
+
+// Интерфейс представления формы заказа
+interface IOrderFormView extends IView {
+  setFormData(data: IOrderForm): void;
+  onNextStep(callback: () => void): void;
+  validate(): boolean;
+  showError(message: string): void;
+  hideError(): void;
+}
+
+// Интерфейс представления успешного заказа
+interface IOrderSuccessView extends IView {
+  setTotalPrice(price: number): void;
+  onContinueShopping(callback: () => void): void;
+}
+```
+
+### Интерфейсы моделей данных
+
+``` TypeScript
+// Интерфейс модели каталога товаров
+interface ICardModel {
+  getCards(): ICard[];
+  getCardById(id: string): ICard | undefined;
+}
+
+// Интерфейс модели корзины
+interface IBasketModel {
+  addItem(item: ICard): void;
+  removeItem(id: string): void;
+  getItems(): ICard[];
+  calculateTotal(): Price;
+  clear(): void;
+  hasItem(id: string): boolean;
+  getIndex(): number;
+}
+
+// Интерфейс модели формы заказа
+interface IOrderFormModel {
+  setPayment(payment: PaymentMethod): void;
+  setDeliveryAddress(address: string): void;
+  setEmail(email: string): void;
+  setPhone(phone: string): void;
+  validateStep(): boolean;
+  validateField(field: keyof IOrderForm): boolean;
+  getValidationError(): string | null;
+  getFormData(): IOrderForm;
+}
+
+// Интерфейс модели успешного заказа
+interface IOrderSuccessModel {
+  setTotalPrice(price: number): void;
+  getTotalPrice(): number;
 }
 ```

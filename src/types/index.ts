@@ -1,7 +1,9 @@
+// Базовые типы данных
 export type PaymentMethod = 'online' | 'upon_receipt';
 export type Price = number | null;
 export type EventName = string | RegExp;
 
+// Типы данных API
 export interface ICard {
   id: string;
   image: string;
@@ -30,20 +32,6 @@ export interface IOrderForm {
 
 export interface IOrderSuccess {
   totalPrice: number;
-}
-
-export interface IApi {
-  getProducts(): Promise<ICard[]>;
-  submitOrder(order: IOrderForm): Promise<IOrderSuccess>;
-}
-
-export interface IEventEmitter {
-  on<T extends object>(event: EventName, callback: (data: T) => void): void;
-  off(event: EventName, callback: (data: any) => void): void;
-  emit<T extends object>(event: string, data?: T): void;
-  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
-  onAll(callback: (event: { eventName: string, data: unknown }) => void): void;
-  offAll(): void;
 }
 
 export interface ICardModel {
@@ -75,6 +63,24 @@ export interface IOrderFormModel {
 export interface IOrderSuccessModel {
   setTotalPrice(price: number): void;
   getTotalPrice(): number;
+}
+
+export interface IApi {
+  getProducts(): Promise<ICard[]>;
+  submitOrder(order: IOrderForm): Promise<IOrderSuccess>;
+}
+
+export interface IEventEmitter {
+  on<T extends object>(event: EventName, callback: (data: T) => void): void;
+  off(event: EventName, callback: (data: any) => void): void;
+  emit<T extends object>(event: string, data?: T): void;
+  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+  onAll(callback: (event: { eventName: string, data: unknown }) => void): void;
+  offAll(): void;
+}
+
+export interface IComponent<T> {
+  render(data?: Partial<T>): HTMLElement;
 }
 
 export interface IView {
@@ -119,8 +125,17 @@ export interface IOrderSuccessView extends IView {
   onContinueShopping(callback: () => void): void;
 }
 
-export interface IComponent<T> {
-  render(data?: Partial<T>): HTMLElement;
+export interface IAppState {
+  loadCatalog(): Promise<void>;
+  getCatalog(): ICard[];
+
+  addToBasket(card: ICard): void;
+  removeFromBasket(id: string): void;
+  getBasketItems(): ICard[];
+  getBasketTotal(): Price;
+
+  updateOrderForm(data: Partial<IOrderForm>): void;
+  submitOrder(): Promise<IOrderSuccess>;
 }
 
 export enum AppEvents {
@@ -160,5 +175,3 @@ export interface IOrderSubmittedEvent {
 export interface IModalEvent {
   content: HTMLElement;
 }
-
-
