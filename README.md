@@ -108,6 +108,14 @@ type Price = number | null;
 type PaymentMethod = 'online' | 'upon_receipt';
 ```
 
+Тип для названия события EventName, который может быть строкой или регулярным выражением:
+- `string` - точное название события (например: 'card:selected', 'basket:updated')
+- `RegExp` - шаблон для подписки на несколько событий (например: /^card:/ для всех событий карточек)
+
+``` TypeScript
+type EventName = string | RegExp;
+```
+
 ### Базовые классы
 
 Класс карточки с товаром:
@@ -320,44 +328,8 @@ class AppState {
 - `MODAL_OPENED` - модальное окно открыто (данные: IModalEvent)
 - `MODAL_CLOSED` - модальное окно закрыто (данные: IModalEvent)
 
-### Интерфейсы событий
 
-``` TypeScript
-// Событие выбора карточки товара
-interface ICardSelectedEvent {
-  cardId: string;
-}
-
-// Событие добавления/удаления товара из корзины
-interface ICardBasketEvent {
-  card: ICard;
-}
-
-// Событие обновления корзины
-interface IBasketUpdatedEvent {
-  items: ICard[];
-  totalPrice: Price;
-}
-
-// Событие завершения шага заказа
-interface IOrderStepEvent {
-  step: number;
-  isValid: boolean;
-}
-
-// Событие отправки заказа
-interface IOrderSubmittedEvent {
-  order: IOrderForm;
-  result: IOrderSuccess;
-}
-
-// Событие модального окна
-interface IModalEvent {
-  content: HTMLElement;
-}
-```
-
-### Интерфейсы для API, событий и представлений
+### Классы для API, событий и представлений
 
 Класс API-клиента для работы с сервером:
 
@@ -377,8 +349,36 @@ class Api {
 Класс брокера событий для связи между компонентами:
 
 ``` TypeScript
+class EventEmitter {
+  // Подписка на событие
+  // Принимает: event — название события, callback — функция-обработчик
+  // Возвращает: void
+  on<T extends object>(event: EventName, callback: (data: T) => void): void;
 
+  // Отписка от события
+  // Принимает: event — название события, callback — функция-обработчик
+  // Возвращает: void
+  off(event: EventName, callback: (data: any) => void): void;
 
+  // Вызов события
+  // Принимает: event — название события, data — данные события
+  // Возвращает: void
+  emit<T extends object>(event: string, data?: T): void;
+
+  // Создание коллбека-триггера для генерации события
+  // Принимает: event — название события, context — контекстные данные
+  // Возвращает: функция-триггер, которая при вызове генерирует событие
+  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+
+  // Подписка на все события
+  // Принимает: callback — функция-обработчик всех событий
+  // Возвращает: void
+  onAll(callback: (event: { eventName: string, data: unknown }) => void): void;
+
+  // Сброс всех обработчиков событий
+  // Возвращает: void
+  offAll(): void;
+}
 ```
 
 Класс представления карточки товара:
@@ -530,44 +530,5 @@ class OrderSuccessView {
   // Принимает: callback — функция-обработчик
   // Возвращает: void
   onContinueShopping(callback: () => void): void;
-}
-```
-
-### Интерфейсы моделей данных
-
-``` TypeScript
-// Интерфейс модели каталога товаров
-interface ICardModel {
-  getCards(): ICard[];
-  getCardById(id: string): ICard | undefined;
-}
-
-// Интерфейс модели корзины
-interface IBasketModel {
-  addItem(item: ICard): void;
-  removeItem(id: string): void;
-  getItems(): ICard[];
-  calculateTotal(): Price;
-  clear(): void;
-  hasItem(id: string): boolean;
-  getIndex(): number;
-}
-
-// Интерфейс модели формы заказа
-interface IOrderFormModel {
-  setPayment(payment: PaymentMethod): void;
-  setDeliveryAddress(address: string): void;
-  setEmail(email: string): void;
-  setPhone(phone: string): void;
-  validateStep(): boolean;
-  validateField(field: keyof IOrderForm): boolean;
-  getValidationError(): string | null;
-  getFormData(): IOrderForm;
-}
-
-// Интерфейс модели успешного заказа
-interface IOrderSuccessModel {
-  setTotalPrice(price: number): void;
-  getTotalPrice(): number;
 }
 ```
