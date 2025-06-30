@@ -46,7 +46,48 @@ yarn build
 
 Архитектура: MVP (Model-View-Presenter) с брокером событий (EventEmitter) для связи между слоями.
 
+**Принципы архитектуры:**
+- **Изолированность** — отдельные части системы могут использоваться как самостоятельные решения
+- **Единственная ответственность** — каждый компонент архитектуры решает ровно одну задачу и делает её хорошо
+- **Масштабируемость** — возможность расширять функциональность системы без изменения базового кода
+
+**Слои архитектуры:**
+- **Model** — управление данными и бизнес-логикой
+- **View** — отображение интерфейса пользователя
+- **Presenter** — координация между Model и View через брокер событий
+
 ![UML Схема](/UML.jpg)
+
+## Описание базовых классов
+
+### Класс EventEmitter
+Класс EventEmitter обеспечивает работу событий. Его функции: возможность установить и снять слушателей событий, вызвать слушателей при возникновении события, создавать коллбеки-триггеры для генерации событий, подписываться на все события и сбрасывать все обработчики.
+
+### Класс Api
+Класс Api обеспечивает взаимодействие с сервером. Его функции: получение списка товаров с сервера и отправка заказа на сервер.
+
+### Класс Component
+Класс Component является базовым классом для всех компонентов интерфейса. Его функции: предоставление инструментария для работы с DOM, управление отображением элементов и рендеринг компонентов.
+
+## Описание компонентов
+
+### Компонент Card
+Компонент Card отображает информацию о товаре в виде карточки. Использует компонент Button для кнопок "Купить" и "Убрать", компонент Image для отображения изображения товара. Генерирует события CARD_ADDED_TO_BASKET и CARD_REMOVED_FROM_BASKET.
+
+### Компонент Catalog
+Компонент Catalog отображает каталог товаров в виде сетки карточек. Использует компонент Card для отображения каждого товара. Генерирует событие CARD_SELECTED при клике на карточку.
+
+### Компонент Basket
+Компонент Basket отображает корзину с выбранными товарами. Использует компонент Card для отображения товаров в корзине, компонент Button для кнопки "Оформить заказ". Генерирует события BASKET_UPDATED и ORDER_STEP_COMPLETED.
+
+### Компонент Modal
+Компонент Modal отображает модальные окна для различных операций. Может содержать любой произвольный компонент в качестве содержимого. Генерирует события MODAL_OPENED и MODAL_CLOSED.
+
+### Компонент OrderForm
+Компонент OrderForm отображает форму заказа с пошаговой валидацией. Использует компонент Button для навигации по шагам, компонент Input для полей ввода. Генерирует события ORDER_STEP_COMPLETED и ORDER_SUBMITTED.
+
+### Компонент OrderSuccess
+Компонент OrderSuccess отображает сообщение об успешном оформлении заказа. Использует компонент Button для кнопки "Продолжить покупки". Генерирует событие для возврата к каталогу.
 
 ## Описание типов и классов
 
@@ -76,19 +117,19 @@ class Card {
   // Идентификатор
   protected id: string;
 
-  // Категорию 
+  // Ссылка на картинку товара
+  protected image: string;
+
+  // Категория
   // (например: софт-скил, хард-скил, другое, дополнительное, кнопка)
   protected category: string;
 
   // Наименование товара в карточке 
   // (например: HEX-леденец, Портативный телепорт)
-  protected name: string;
+  protected title: string;
 
   // Описание товара в карточке
-  protected description: string;
-
-  // Ссылка на картинку товара
-  protected image: string;
+  protected text: string;
 
   // Стоимость товара
   protected price: Price;
@@ -116,6 +157,9 @@ class CardList {
 
 ``` TypeScript
 class Basket {
+  // Номер позиции в корзине
+  protected index: number;
+
   // Массив товаров в корзине
   protected items: ICard[];
 
@@ -184,9 +228,18 @@ class OrderForm {
   // Возвращает: boolean (true, если текущий шаг формы валиден, false - если есть ошибки)
   validateStep(): boolean;
 
+  // Метод для валидации конкретного поля формы
+  // Принимает: field — название поля для валидации
+  // Возвращает: boolean (true, если поле валидно, false - если есть ошибки)
+  validateField(field: keyof IOrderForm): boolean;
+
   // Метод для получения сообщения об ошибке валидации
   // Возвращает: string | null (строка с ошибкой, если есть; null — если ошибок нет)
   getValidationError(): string | null;
+
+  // Метод для получения данных формы
+  // Возвращает: IOrderForm (объект с данными формы)
+  getFormData(): IOrderForm;
 }
 ```
 
@@ -256,14 +309,53 @@ class AppState {
 
 ### События приложения
 
-- `CARD_SELECTED` - товар выбран для просмотра
-- `CARD_ADDED_TO_BASKET` - товар добавлен в корзину
-- `CARD_REMOVED_FROM_BASKET` - товар удален из корзины
-- `BASKET_UPDATED` - корзина обновлена
-- `ORDER_STEP_COMPLETED` - шаг заказа завершен
-- `ORDER_SUBMITTED` - заказ отправлен
-- `MODAL_OPENED` - модальное окно открыто
-- `MODAL_CLOSED` - модальное окно закрыто
+События используются для связи между компонентами через брокер EventEmitter:
+
+- `CARD_SELECTED` - товар выбран для просмотра (данные: ICardSelectedEvent)
+- `CARD_ADDED_TO_BASKET` - товар добавлен в корзину (данные: ICardBasketEvent)
+- `CARD_REMOVED_FROM_BASKET` - товар удален из корзины (данные: ICardBasketEvent)
+- `BASKET_UPDATED` - корзина обновлена (данные: IBasketUpdatedEvent)
+- `ORDER_STEP_COMPLETED` - шаг заказа завершен (данные: IOrderStepEvent)
+- `ORDER_SUBMITTED` - заказ отправлен (данные: IOrderSubmittedEvent)
+- `MODAL_OPENED` - модальное окно открыто (данные: IModalEvent)
+- `MODAL_CLOSED` - модальное окно закрыто (данные: IModalEvent)
+
+### Интерфейсы событий
+
+``` TypeScript
+// Событие выбора карточки товара
+interface ICardSelectedEvent {
+  cardId: string;
+}
+
+// Событие добавления/удаления товара из корзины
+interface ICardBasketEvent {
+  card: ICard;
+}
+
+// Событие обновления корзины
+interface IBasketUpdatedEvent {
+  items: ICard[];
+  totalPrice: Price;
+}
+
+// Событие завершения шага заказа
+interface IOrderStepEvent {
+  step: number;
+  isValid: boolean;
+}
+
+// Событие отправки заказа
+interface IOrderSubmittedEvent {
+  order: IOrderForm;
+  result: IOrderSuccess;
+}
+
+// Событие модального окна
+interface IModalEvent {
+  content: HTMLElement;
+}
+```
 
 ### Интерфейсы для API, событий и представлений
 
@@ -285,22 +377,8 @@ class Api {
 Класс брокера событий для связи между компонентами:
 
 ``` TypeScript
-class EventEmitter {
-  // Подписка на событие
-  // Принимает: event — название события, callback — функция-обработчик (data?: any)
-  // Возвращает: void
-  on(event: string, callback: (data?: any) => void): void;
 
-  // Отписка от события
-  // Принимает: event — название события, callback — функция-обработчик
-  // Возвращает: void
-  off(event: string, callback: (data?: any) => void): void;
 
-  // Вызов события
-  // Принимает: event — название события, data — данные события
-  // Возвращает: void
-  emit(event: string, data?: any): void;
-}
 ```
 
 Класс представления карточки товара:
@@ -423,6 +501,15 @@ class OrderFormView {
   // Валидация формы
   // Возвращает: boolean (true, если форма валидна)
   validate(): boolean;
+
+  // Показать сообщение об ошибке
+  // Принимает: message — текст ошибки
+  // Возвращает: void
+  showError(message: string): void;
+
+  // Скрыть сообщение об ошибке
+  // Возвращает: void
+  hideError(): void;
 }
 ```
 
@@ -443,5 +530,44 @@ class OrderSuccessView {
   // Принимает: callback — функция-обработчик
   // Возвращает: void
   onContinueShopping(callback: () => void): void;
+}
+```
+
+### Интерфейсы моделей данных
+
+``` TypeScript
+// Интерфейс модели каталога товаров
+interface ICardModel {
+  getCards(): ICard[];
+  getCardById(id: string): ICard | undefined;
+}
+
+// Интерфейс модели корзины
+interface IBasketModel {
+  addItem(item: ICard): void;
+  removeItem(id: string): void;
+  getItems(): ICard[];
+  calculateTotal(): Price;
+  clear(): void;
+  hasItem(id: string): boolean;
+  getIndex(): number;
+}
+
+// Интерфейс модели формы заказа
+interface IOrderFormModel {
+  setPayment(payment: PaymentMethod): void;
+  setDeliveryAddress(address: string): void;
+  setEmail(email: string): void;
+  setPhone(phone: string): void;
+  validateStep(): boolean;
+  validateField(field: keyof IOrderForm): boolean;
+  getValidationError(): string | null;
+  getFormData(): IOrderForm;
+}
+
+// Интерфейс модели успешного заказа
+interface IOrderSuccessModel {
+  setTotalPrice(price: number): void;
+  getTotalPrice(): number;
 }
 ```
