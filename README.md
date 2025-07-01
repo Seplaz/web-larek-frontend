@@ -289,6 +289,159 @@ class EventEmitter {
 }
 ```
 
+Класс `ProductModel` — модель каталога товаров:
+
+``` TypeScript
+class ProductModel {
+  // Получает список всех товаров из источника данных (например, API)
+  getProducts(): Promise<IProduct[]>;
+
+  // Получает товар по идентификатору
+  getProductById(id: string): Promise<IProduct | undefined>;
+}
+```
+
+Класс `BasketModel` — модель корзины:
+
+``` TypeScript
+class BasketModel {
+  // Возвращает текущее состояние корзины
+  getItems(): IBasket;
+
+  // Добавляет товар в корзину
+  addItem(product: IProduct): void;
+
+  // Удаляет товар из корзины по идентификатору
+  removeItem(productId: string): void;
+
+  // Очищает корзину
+  clear(): void;
+}
+```
+
+Класс `OrderModel` — модель заказа:
+
+``` TypeScript
+class OrderModel {
+  // Возвращает текущую форму заказа
+  getOrderForm(): IOrderForm;
+
+  // Обновляет данные формы заказа
+  updateOrderForm(data: Partial<IOrderForm>): void;
+
+  // Отправляет заказ
+  submitOrder(): Promise<IOrderForm>;
+}
+```
+
+Класс `ProductListView` — отображение списка товаров:
+
+``` TypeScript
+class ProductListView {
+  // Отображает список товаров
+  renderProducts(products: IProduct[]): void;
+
+  // Устанавливает обработчик клика по товару
+  onProductClick(callback: (id: string) => void): void;
+
+  // Базовый метод рендера
+  render(data?: object): HTMLElement;
+}
+```
+
+Класс `ProductDetailView` — отображение детальной информации о товаре:
+
+``` TypeScript
+class ProductDetailView {
+  // Отображает детальную информацию о товаре
+  renderProduct(product: IProduct): void;
+
+  // Устанавливает обработчик клика по кнопке "Купить"
+  onBuyClick(callback: () => void): void;
+
+  // Устанавливает обработчик клика по кнопке "Убрать"
+  onRemoveClick(callback: () => void): void;
+
+  // Базовый метод рендера
+  render(data?: object): HTMLElement;
+}
+```
+
+Класс `BasketView` — отображение корзины:
+
+``` TypeScript
+class BasketView {
+  // Отображает содержимое корзины
+  renderBasket(basket: IBasket): void;
+
+  // Устанавливает обработчик удаления товара из корзины
+  onRemoveItem(callback: (id: string) => void): void;
+
+  // Устанавливает обработчик клика по кнопке "Оформить"
+  onCheckoutClick(callback: () => void): void;
+
+  // Базовый метод рендера
+  render(data?: object): HTMLElement;
+}
+```
+
+Класс `ModalView` — отображение модальных окон:
+
+``` TypeScript
+class ModalView {
+  // Открывает модальное окно по идентификатору
+  open(modalId: string): void;
+
+  // Закрывает модальное окно
+  close(): void;
+
+  // Устанавливает обработчик закрытия модального окна
+  onClose(callback: () => void): void;
+
+  // Базовый метод рендера
+  render(data?: object): HTMLElement;
+}
+```
+
+Класс `OrderFormView` — отображение формы заказа:
+
+``` TypeScript
+class OrderFormView {
+  // Отображает текущий шаг формы заказа
+  renderStep(step: number, data: Partial<IOrderForm>): void;
+
+  // Устанавливает обработчик перехода к следующему шагу
+  onNextStep(callback: () => void): void;
+
+  // Устанавливает обработчик отправки формы заказа
+  onSubmit(callback: (data: IOrderForm) => void): void;
+
+  // Показывает сообщение об ошибке
+  showError(message: string): void;
+
+  // Скрывает сообщение об ошибке
+  clearError(): void;
+
+  // Базовый метод рендера
+  render(data?: object): HTMLElement;
+}
+```
+
+Класс `ApiClient` — клиент для работы с API:
+
+``` TypeScript
+class ApiClient {
+  // Получает список товаров с сервера
+  fetchProducts(): Promise<IProduct[]>;
+
+  // Получает товар по идентификатору с сервера
+  fetchProductById(id: string): Promise<IProduct>;
+
+  // Отправляет заказ на сервер
+  submitOrder(order: IOrderForm): Promise<{ orderId: string; totalPrice: number }>;
+}
+```
+
 ## События (Events)
 
 В системе используется брокер событий для связи между компонентами архитектуры MVP. События позволяют компонентам общаться друг с другом без прямых зависимостей.
@@ -299,65 +452,52 @@ class EventEmitter {
 ``` TypeScript
 // Товар выбран пользователем
 'product:selected' — событие выбора товара
-// Данные: { product: IProduct }
 
 // Товар добавлен в корзину
 'product:added' — событие добавления товара в корзину
-// Данные: { product: IProduct }
 
 // Товар удален из корзины
 'product:removed' — событие удаления товара из корзины
-// Данные: { productId: string }
 ```
 
 #### События корзины (Basket Events)
 ``` TypeScript
 // Корзина обновлена
 'basket:updated' — событие обновления корзины
-// Данные: { basket: IBasket }
 
 // Корзина очищена
 'basket:cleared' — событие очистки корзины
-// Данные: { }
 
 // Изменено количество товаров в корзине
 'basket:itemCountChanged' — событие изменения количества товаров
-// Данные: { itemCount: number }
 ```
 
 #### События заказа (Order Events)
 ``` TypeScript
 // Форма заказа отправлена
 'order:submitted' — событие отправки формы заказа
-// Данные: { order: IOrderForm }
 
 // Заказ успешно создан
 'order:success' — событие успешного создания заказа
-// Данные: { orderId: string, order: IOrderForm }
 
 // Ошибка при создании заказа
 'order:error' — событие ошибки при создании заказа
-// Данные: { error: string }
 ```
 
 #### События модальных окон (Modal Events)
 ``` TypeScript
 // Модальное окно открыто
 'modal:opened' — событие открытия модального окна
-// Данные: { modalId: string }
 
 // Модальное окно закрыто
 'modal:closed' — событие закрытия модального окна
-// Данные: { modalId: string }
 ```
 
 #### События валидации (Validation Events)
 ``` TypeScript
 // Ошибка валидации
 'validation:error' — событие ошибки валидации
-// Данные: { field: string, message: string }
 
 // Успешная валидация
 'validation:success' — событие успешной валидации
-// Данные: { field: string }
 ```

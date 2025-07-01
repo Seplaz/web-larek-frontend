@@ -48,3 +48,17 @@ export enum Events {
   MODAL_OPENED = 'modal:opened',
   MODAL_CLOSED = 'modal:closed'
 }
+
+export interface IViewConstructor {
+  new (container: HTMLElement, events?: IEventEmitter): IView;
+}
+
+export interface IView {
+  render(data?: object): HTMLElement;
+}
+
+export interface IApiClient {
+  fetchProducts(): Promise<IProduct[]>;
+  fetchProductById(id: string): Promise<IProduct>;
+  submitOrder(order: IOrderForm): Promise<{ orderId: string; totalPrice: number }>;
+}
