@@ -1,15 +1,13 @@
-// Базовые типы данных
 export type PaymentMethod = 'online' | 'upon_receipt';
 export type Price = number | null;
 export type EventName = string | RegExp;
 
-// Типы данных API
 export interface IProduct {
   id: string;
   image: string;
   category: string;
   title: string;
-  text: string;
+  description: string;
   price: Price;
 }
 
@@ -28,15 +26,12 @@ export interface IOrderForm {
   deliveryAddress: string;
   email: string;
   phone: string;
-}
-
-export interface IOrderSuccess {
   totalPrice: Price;
 }
 
 export interface IEventEmitter {
   on<T extends object>(event: EventName, callback: (data: T) => void): void;
-  off(event: EventName, callback: (data: any) => void): void;
+  off(event: EventName, callback: (data: unknown) => void): void;
   emit<T extends object>(event: string, data?: T): void;
   trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
   onAll(callback: (event: { eventName: string, data: unknown }) => void): void;

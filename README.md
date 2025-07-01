@@ -56,19 +56,18 @@ yarn build
 - **View** — отображение интерфейса пользователя
 - **Presenter** — координация между Model и View через брокер событий
 
-
 ## Описание типов и классов
 
 ### Базовые типы
 
-Для стоимости товара есть отдельный тип Price, который может быть числом или null
+Для стоимости товара есть отдельный тип `Price`, который может быть `number` или `null`
 (если цена товара отсутствует, например: бесценно):
 
 ``` TypeScript
 type Price = number | null;
 ```
 
-Тип для способа оплаты PaymentMethod, который может принимать два значения:
+Тип для способа оплаты `PaymentMethod`, который может принимать два значения:
 - `online` - оплата онлайн
 - `upon_receipt` - оплата при получении
 
@@ -76,9 +75,9 @@ type Price = number | null;
 type PaymentMethod = 'online' | 'upon_receipt';
 ```
 
-Тип для названия события EventName, который может быть строкой или регулярным выражением:
-- `string` - точное название события (например: 'product:selected', 'basket:updated')
-- `RegExp` - шаблон для подписки на несколько событий (например: /^product:/ для всех событий карточек)
+Тип для названия события `EventName`, который может быть строкой или регулярным выражением:
+- `string` - точное название события (например: `product:selected`, `basket:updated`)
+- `RegExp` - шаблон для подписки на несколько событий (например: `/^product:/` для всех событий карточек)
 
 ``` TypeScript
 type EventName = string | RegExp;
@@ -86,132 +85,143 @@ type EventName = string | RegExp;
 
 ### Базовые классы
 
-Класс карточки с товаром:
+Класс `Product` это сам товар:
 
 ``` TypeScript
-class Product {
-  // Идентификатор карточки (товара)
-  protected id: string;
+class IProduct {
+  // Идентификатор товара
+  id: string;
 
   // Ссылка на картинку товара
-  protected image: string;
+  image: string;
 
-  // Категория
-  // (например: софт-скил, хард-скил, другое, дополнительное, кнопка)
-  protected category: string;
+  // Категория товара
+  category: string;
 
-  // Наименование товара в карточке 
-  // (например: HEX-леденец, Портативный телепорт)
-  protected title: string;
+  // Наименование товара
+  title: string;
 
-  // Описание товара в карточке
-  protected text: string;
+  // Описание товара
+  description: string;
 
   // Стоимость товара
-  protected price: Price;
+  price: Price;
 }
 ```
 
-Класс контейнера со списком товаров:
+Класс `ProductList` это список товаров на странице:
 
 ``` TypeScript
 class ProductList {
-  // Массив с карточками
-  protected products: IProduct[];
+  // Массив со списком товаров
+  products: IProduct[];
 
-  // Метод для получения всех карточек
-  // Возвращает: IProduct[] (массив всех карточек)
-  getProducts(): IProduct[];
+  // Устанавливает список товаров после загрузки из API
+  // Принимает: items — массив товаров для установки
+  // Возвращает: void
+  setItems(items: IProduct[]): void;
 
-  // Метод для поиска карточки по ID
-  // Возвращает: IProduct | undefined (найденную карточку или undefined, если не найдена)
-  getProductById(id: string): IProduct | undefined;
+  // Получает товар по идентификатору
+  // Принимает: id — уникальный идентификатор товара
+  // Возвращает: IProduct — найденный товар или undefined, если товар не найден
+  getItemById(id: string): IProduct | undefined;
 }
 ```
 
-Класс корзины для управления товарами в заказе:
+Класс `Basket` является корзиной с товарами:
 
 ``` TypeScript
 class Basket {
-  // Номер позиции в корзине
-  protected index: number;
+  // Индекс товара в корзине (1, 2, 3...)
+  index: number;
 
-  // Массив товаров в корзине
-  protected products: IProduct[];
+  // Массив с товарами в корзине
+  products: IProduct[];
 
-  // Общая стоимость товаров в корзине
-  protected totalPrice: Price;
+  // Общая стоимость товаров
+  totalPrice: Price;
 
-  // Метод для добавления товара в корзину
-  // Возвращает: void (ничего не возвращает)
-  addItem(item: IProduct): void;
+  // Добавляет товар в корзину
+  // Принимает: product — товар для добавления в корзину
+  // Возвращает: void
+  addItem(product: IProduct): void;
 
-  // Метод для удаления товара из корзины по ID
-  // Возвращает: void (ничего не возвращает)
+  // Удаляет товар из корзины по идентификатору
+  // Принимает: id — уникальный идентификатор товара для удаления
+  // Возвращает: void
   removeItem(id: string): void;
 
-  // Метод для получения всех товаров в корзине
-  // Возвращает: IProduct[] (массив всех товаров в корзине)
-  getItems(): IProduct[];
-
-  // Метод для расчета общей стоимости
-  // Возвращает: Price (общую стоимость товаров в корзине или null)
-  calculateTotal(): Price;
-
-  // Метод для очистки корзины (например после оформления заказа корзина очищается)
-  // Возвращает: void (ничего не возвращает)
+  // Очищает корзину от всех товаров
+  // Возвращает: void
   clear(): void;
 
-  // Метод для проверки, есть ли товар в корзине (если товар есть, то добавить тот же товар нельзя)
-  // Возвращает: boolean (true, если товар есть в корзине, false - если нет)
-  hasItem(id: string): boolean;
+  // Вычисляет общую стоимость товаров в корзине
+  // Возвращает: Price — общая стоимость всех товаров в корзине (number или null)
+  calculateTotalPrice(): Price;
+
+  // Получает товар по идентификатору
+  // Принимает: id — уникальный идентификатор товара
+  // Возвращает: IProduct | undefined — найденный товар или undefined, если товар не найден
+  getItemById(id: string): IProduct | undefined;
+
+  // Проверяет, есть ли товар в корзине
+  // Принимает: id — уникальный идентификатор товара для проверки
+  // Возвращает: boolean — true, если товар найден в корзине, false — если нет
+  contains(id: string): boolean;
 }
 ```
 
-Класс для управления формой заказа:
+Класс `OrderForm` представляет форму заказа:
 
 ``` TypeScript
 class OrderForm {
   // Способ оплаты (онлайн или при получении)
-  protected payment: PaymentMethod;
+  payment: PaymentMethod;
 
   // Адрес доставки
-  protected deliveryAddress: string;
+  deliveryAddress: string;
 
   // Email покупателя
-  protected email: string;
+  email: string;
 
   // Телефон покупателя
-  protected phone: string;
+  phone: string;
 
-  // Метод для установки способа оплаты
-  // Возвращает: void (ничего не возвращает)
-  setPayment(payment: PaymentMethod): void;
+  // Общая стоимость заказа
+  totalPrice: Price;
 
-  // Метод для установки адреса доставки
-  // Возвращает: void (ничего не возвращает)
+  // Устанавливает способ оплаты
+  // Принимает: method — способ оплаты ('online' или 'upon_receipt')
+  // Возвращает: void
+  setPayment(method: PaymentMethod): void;
+
+  // Устанавливает адрес доставки
+  // Принимает: address — строка с адресом доставки
+  // Возвращает: void
   setDeliveryAddress(address: string): void;
 
-  // Метод для установки email
-  // Возвращает: void (ничего не возвращает)
+  // Устанавливает email покупателя
+  // Принимает: email — строка с email адресом
+  // Возвращает: void
   setEmail(email: string): void;
 
-  // Метод для установки телефона
-  // Возвращает: void (ничего не возвращает)
+  // Устанавливает телефон покупателя
+  // Принимает: phone — строка с номером телефона
+  // Возвращает: void
   setPhone(phone: string): void;
+
+  // Устанавливает общую стоимость заказа
+  // Принимает: price — стоимость заказа (number или null)
+  // Возвращает: void
+  setTotalPrice(price: Price): void;
+
+  // Проверяет валидность всей формы заказа
+  // Возвращает: boolean — true, если все поля формы валидны, false — если есть ошибки
+  validate(): boolean;
 
   // Метод для валидации текущего шага формы
   // Возвращает: boolean (true, если текущий шаг формы валиден, false - если есть ошибки)
   validateStep(): boolean;
-
-  // Показать сообщение об ошибке
-  // Принимает: message — текст ошибки
-  // Возвращает: void
-  showError(message: string): void;
-
-  // Скрыть сообщение об ошибке
-  // Возвращает: void
-  hideError(): void;
 
   // Метод для валидации конкретного поля формы
   // Принимает: field — название поля для валидации
@@ -222,73 +232,132 @@ class OrderForm {
   // Возвращает: string | null (строка с ошибкой, если есть; null — если ошибок нет)
   getValidationError(): string | null;
 
-  // Метод для получения данных формы
-  // Возвращает: IOrderForm (объект с данными формы)
-  getFormData(): IOrderForm;
+  // Показать сообщение об ошибке
+  // Принимает: message — текст ошибки
+  // Возвращает: void
+  showError(message: string): void;
+
+  // Скрыть сообщение об ошибке
+  // Возвращает: void
+  hideError(): void;
+
+  // Получает данные формы в виде объекта
+  // Возвращает: IOrderForm — объект с данными формы заказа
+  getData(): IOrderForm;
+
+  // Очищает форму заказа, сбрасывая все поля в начальное состояние
+  // Возвращает: void
+  clear(): void;
 }
 ```
 
-Класс для отображения результата успешного заказа:
-
-``` TypeScript
-class OrderSuccess {
-  // Общая стоимость заказа
-  protected totalPrice: Price;
-
-  // Метод для установки общей стоимости
-  // Возвращает: void (ничего не возвращает)
-  setTotalPrice(price: Price): void;
-
-  // Метод для получения общей стоимости
-  // Возвращает: Price (общую стоимость заказа)
-  getTotalPrice(): Price;
-}
-```
-
-Класс брокера событий для связи между компонентами:
+Класс `EventEmitter` является брокером событий для связи между компонентами:
 
 ``` TypeScript
 class EventEmitter {
-  // Подписка на событие
-  // Принимает: event — название события, callback — функция-обработчик
+  // Карта событий и их обработчиков
+  _events: Map<EventName, Set<Subscriber>>;
+
+  // Устанавливает обработчик на событие
+  // Принимает: eventName — название события (строка или RegExp), callback — функция-обработчик
   // Возвращает: void
-  on<T extends object>(event: EventName, callback: (data: T) => void): void;
+  on<T extends object>(eventName: EventName, callback: (data: T) => void): void;
 
-  // Отписка от события
-  // Принимает: event — название события, callback — функция-обработчик
+  // Снимает обработчик с события
+  // Принимает: eventName — название события, callback — функция-обработчик для удаления
   // Возвращает: void
-  off(event: EventName, callback: (data: any) => void): void;
+  off(eventName: EventName, callback: (data: unknown) => void): void;
 
-  // Вызов события
-  // Принимает: event — название события, data — данные события
+  // Инициирует событие с данными
+  // Принимает: eventName — название события, data — данные для передачи в обработчик
   // Возвращает: void
-  emit<T extends object>(event: string, data?: T): void;
+  emit<T extends object>(eventName: string, data?: T): void;
 
-  // Создание коллбека-триггера для генерации события
-  // Принимает: event — название события, context — контекстные данные
-  // Возвращает: функция-триггер, которая при вызове генерирует событие
-  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+  // Создает триггер для события с контекстом
+  // Принимает: eventName — название события, context — контекстные данные
+  // Возвращает: Function — функцию-триггер, которая при вызове генерирует событие
+  trigger<T extends object>(eventName: string, context?: Partial<T>): (data: T) => void;
 
-  // Подписка на все события
-  // Принимает: callback — функция-обработчик всех событий
+  // Устанавливает обработчик на все события
+  // Принимает: callback — функция-обработчик для всех событий
   // Возвращает: void
   onAll(callback: (event: { eventName: string, data: unknown }) => void): void;
 
-  // Сброс всех обработчиков событий
+  // Сбрасывает все обработчики событий
   // Возвращает: void
   offAll(): void;
 }
 ```
 
-### События приложения
+## События (Events)
 
-События используются для связи между компонентами через брокер EventEmitter:
+В системе используется брокер событий для связи между компонентами архитектуры MVP. События позволяют компонентам общаться друг с другом без прямых зависимостей.
 
-- `PRODUCT_SELECTED` - товар выбран для просмотра
-- `PRODUCT_ADDED_TO_BASKET` - товар добавлен в корзину
-- `PRODUCT_REMOVED_FROM_BASKET` - товар удален из корзины
-- `BASKET_UPDATED` - корзина обновлена
-- `ORDER_STEP_COMPLETED` - шаг заказа завершен
-- `ORDER_SUBMITTED` - заказ отправлен
-- `MODAL_OPENED` - модальное окно открыто
-- `MODAL_CLOSED` - модальное окно закрыто
+### Основные события
+
+#### События товаров (Product Events)
+``` TypeScript
+// Товар выбран пользователем
+'product:selected' — событие выбора товара
+// Данные: { product: IProduct }
+
+// Товар добавлен в корзину
+'product:added' — событие добавления товара в корзину
+// Данные: { product: IProduct }
+
+// Товар удален из корзины
+'product:removed' — событие удаления товара из корзины
+// Данные: { productId: string }
+```
+
+#### События корзины (Basket Events)
+``` TypeScript
+// Корзина обновлена
+'basket:updated' — событие обновления корзины
+// Данные: { basket: IBasket }
+
+// Корзина очищена
+'basket:cleared' — событие очистки корзины
+// Данные: { }
+
+// Изменено количество товаров в корзине
+'basket:itemCountChanged' — событие изменения количества товаров
+// Данные: { itemCount: number }
+```
+
+#### События заказа (Order Events)
+``` TypeScript
+// Форма заказа отправлена
+'order:submitted' — событие отправки формы заказа
+// Данные: { order: IOrderForm }
+
+// Заказ успешно создан
+'order:success' — событие успешного создания заказа
+// Данные: { orderId: string, order: IOrderForm }
+
+// Ошибка при создании заказа
+'order:error' — событие ошибки при создании заказа
+// Данные: { error: string }
+```
+
+#### События модальных окон (Modal Events)
+``` TypeScript
+// Модальное окно открыто
+'modal:opened' — событие открытия модального окна
+// Данные: { modalId: string }
+
+// Модальное окно закрыто
+'modal:closed' — событие закрытия модального окна
+// Данные: { modalId: string }
+```
+
+#### События валидации (Validation Events)
+``` TypeScript
+// Ошибка валидации
+'validation:error' — событие ошибки валидации
+// Данные: { field: string, message: string }
+
+// Успешная валидация
+'validation:success' — событие успешной валидации
+// Данные: { field: string }
+```
