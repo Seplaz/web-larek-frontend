@@ -1,13 +1,51 @@
 # Проектная работа "Веб-ларек"
 
-Стек: HTML, SCSS, TS, Webpack
+## Описание проекта
 
-Структура проекта:
+Проект интернет-магазин с товарами для веб-разработчиков — Web-ларёк. В нём можно посмотреть каталог товаров, добавить товары в корзину и сделать заказ.
+
+**Стек:** HTML, SCSS, TS, Webpack
+
+## Функциональные требования
+
+Эти требования описывают принцип работы интернет-магазина. Учитывайте их в своём проекте.
+
+### 1. Главная страница:
+- содержит каталог товаров;
+- при нажатии на карточку товара открывается модальное окно с детальной информацией о товаре;
+- при нажатии на иконку корзины открывается корзина.
+
+### 2. Просмотр товара:
+- показана детальная информация о товаре;
+- при нажатии на кнопку «Купить» товар добавляется в корзину, если не был добавлен в корзину раньше;
+- при нажатии на кнопку «Убрать» товар удаляется из корзины.
+
+### 3. Оформление товара:
+
+**Первый шаг:**
+- выбор способа оплаты;
+- ввод адреса доставки;
+- если адрес доставки не введён, появляется сообщение об ошибке.
+
+**Второй шаг:**
+- ввод почты и телефона покупателя;
+- если одно из полей не заполнено, появляется сообщение об ошибке;
+- при нажатии на кнопку оплаты появляется сообщение об успешной оплате и товары удаляются из корзины.
+
+### Требования ко всем страницам:
+Модальные окна закрываются:
+- по клику вне модального окна;
+- по клику на иконку «Закрыть» (крестик).
+
+Кнопка перехода к следующему шагу становится доступна только после выполнения действий на текущей странице (выбора товара, способа оплаты, заполнения данных о покупателе).
+
+## Структура проекта
+
 - src/ — исходные файлы проекта
 - src/components/ — папка с JS компонентами
 - src/components/base/ — папка с базовым кодом
 
-Важные файлы:
+**Важные файлы:**
 - src/pages/index.html — HTML-файл главной страницы
 - src/types/index.ts — файл с типами
 - src/index.ts — точка входа приложения
@@ -46,15 +84,89 @@ yarn build
 
 Архитектура: MVP (Model-View-Presenter) с брокером событий (EventEmitter) для связи между слоями.
 
-**Принципы архитектуры:**
+### Принципы архитектуры:
 - **Изолированность** — отдельные части системы могут использоваться как самостоятельные решения
 - **Единственная ответственность** — каждый компонент архитектуры решает ровно одну задачу и делает её хорошо
 - **Масштабируемость** — возможность расширять функциональность системы без изменения базового кода
 
-**Слои архитектуры:**
+### Слои архитектуры:
 - **Model** — управление данными и бизнес-логикой
 - **View** — отображение интерфейса пользователя
 - **Presenter** — координация между Model и View через брокер событий
+
+### Из каких основных частей состоит архитектура проекта:
+
+1. **Данные (Model):**
+   - Product — модель товара
+   - ProductList — коллекция товаров
+   - Basket — корзина покупок
+   - UserData — данные пользователя
+   - OrderForm — форма заказа
+
+2. **Отображения (View):**
+   - ProductCard — карточка товара
+   - ProductModal — модальное окно товара
+   - BasketModal — модальное окно корзины
+   - OrderForm — форма заказа
+   - OrderSuccess — страница успешного заказа
+
+3. **Координаторы (Presenter):**
+   - ProductPresenter — управление отображением товаров
+   - BasketPresenter — управление корзиной
+   - OrderPresenter — управление процессом заказа
+
+4. **Брокер событий (EventEmitter):**
+   - Обеспечивает связь между компонентами через события
+   - Позволяет компонентам взаимодействовать без прямых зависимостей
+
+### Как части взаимодействуют:
+- Presenter получает данные от Model
+- Presenter обновляет View
+- View отправляет события через EventEmitter
+- Presenter обрабатывает события и обновляет Model
+- Model уведомляет об изменениях через события
+
+### Какие данные используются в приложении:
+- **Товары (Product):** id, image, category, title, description, price
+- **Корзина (Basket):** список товаров, общая стоимость
+- **Пользователь (UserData):** адрес доставки, email, телефон
+- **Заказ (OrderForm):** данные пользователя + способ оплаты + стоимость
+
+### Из каких компонентов состоит приложение:
+- **ProductCard** — отображает карточку товара в каталоге
+- **ProductModal** — показывает детальную информацию о товаре
+- **BasketModal** — отображает корзину покупок
+- **OrderForm** — форма оформления заказа с двумя шагами
+- **OrderSuccess** — страница успешного заказа
+- **Modal** — базовый компонент для модальных окон
+- **Button** — переиспользуемая кнопка
+- **Form** — базовый компонент формы
+
+## Описание компонентов
+
+### Компонент ProductCard
+Компонент ProductCard отображает карточку товара в каталоге, используя компонент Button для кнопки "Купить". При клике на карточку открывается модальное окно с детальной информацией о товаре.
+
+### Компонент ProductModal
+Компонент ProductModal отображает детальную информацию о товаре в модальном окне, используя базовый компонент Modal. Содержит кнопки "Купить" и "Убрать" для управления корзиной.
+
+### Компонент BasketModal
+Компонент BasketModal отображает корзину покупок в модальном окне, используя базовый компонент Modal. Показывает список товаров, общую стоимость и кнопку перехода к оформлению заказа.
+
+### Компонент OrderForm
+Компонент OrderForm управляет процессом оформления заказа с двумя шагами, используя базовый компонент Form. На первом шаге собирает способ оплаты и адрес доставки, на втором — контактные данные покупателя.
+
+### Компонент OrderSuccess
+Компонент OrderSuccess отображает страницу успешного заказа с информацией о стоимости и номером заказа.
+
+### Компонент Modal
+Компонент Modal обеспечивает базовую функциональность модальных окон. Его функции: открытие и закрытие окна, обработка кликов вне окна, управление фокусом.
+
+### Компонент Button
+Компонент Button обеспечивает отображение кнопок в интерфейсе. Его функции: настройка внешнего вида, обработка кликов, управление состоянием (активна/неактивна).
+
+### Компонент Form
+Компонент Form обеспечивает базовую функциональность форм. Его функции: валидация полей, сбор данных, отображение ошибок.
 
 ## Описание типов и классов
 
@@ -64,7 +176,7 @@ yarn build
 (если цена товара отсутствует, например: бесценно):
 
 ``` TypeScript
-type Price = number | null;
+type TPrice = number | null;
 ```
 
 Тип для способа оплаты `PaymentMethod`, который может принимать два значения:
@@ -72,23 +184,56 @@ type Price = number | null;
 - `upon_receipt` - оплата при получении
 
 ``` TypeScript
-type PaymentMethod = 'online' | 'upon_receipt';
+type TPaymentMethod = 'online' | 'upon_receipt';
 ```
 
-Тип для названия события `EventName`, который может быть строкой или регулярным выражением:
-- `string` - точное название события (например: `product:selected`, `basket:updated`)
-- `RegExp` - шаблон для подписки на несколько событий (например: `/^product:/` для всех событий карточек)
+Тип для HTTP-метода запроса `TApiMethod`, который может принимать следующие значения:
+- `GET` — получить данные
+- `POST` — создать данные
+- `PUT` — полностью обновить данные
+- `PATCH` — частично обновить данные
+- `DELETE` — удалить данные
 
 ``` TypeScript
-type EventName = string | RegExp;
+type TApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 ```
+
+### Перечисление событий
+
+Перечисление `Events` содержит все основные события, которые используются для взаимодействия между компонентами приложения через EventEmitter:
+
+```TypeScript
+enum Events {
+  PRODUCTS_LOADED = 'products:loaded',                // Товары загружены
+  PRODUCT_SELECTED = 'product:selected',              // Товар выбран
+
+  PRODUCT_ADDED_TO_BASKET = 'product:added_to_basket',// Товар добавлен в корзину
+  PRODUCT_REMOVED_FROM_BASKET = 'product:removed_from_basket', // Товар удалён из корзины
+
+  BASKET_OPENED = 'basket:opened',                    // Корзина открыта
+  BASKET_UPDATED = 'basket:updated',                  // Корзина обновлена
+  BASKET_CLOSED = 'basket:closed',                    // Корзина закрыта
+
+  ORDER_STEP_COMPLETED = 'order:step_completed',      // Шаг оформления заказа завершён
+  ORDER_SUBMITTED = 'order:submitted',                // Заказ отправлен
+  ORDER_SUCCESS = 'order:success',                    // Заказ успешно оформлен
+  ORDER_ERROR = 'order:error',                        // Ошибка при оформлении заказа
+
+  MODAL_OPENED = 'modal:opened',                      // Модальное окно открыто
+  MODAL_CLOSED = 'modal:closed'                       // Модальное окно закрыто
+}
+```
+
+**Назначение:**  
+Это перечисление используется для стандартизации событий, которые могут возникать в приложении, чтобы компоненты могли реагировать на них через брокер событий (EventEmitter).  
+Каждое событие — это строковая константа, которую удобно использовать для подписки и публикации событий между слоями приложения.
 
 ### Базовые классы
 
 Класс `Product` это сам товар:
 
 ``` TypeScript
-class IProduct {
+class Product {
   // Идентификатор товара
   id: string;
 
@@ -105,7 +250,7 @@ class IProduct {
   description: string;
 
   // Стоимость товара
-  price: Price;
+  price: TPrice;
 }
 ```
 
@@ -120,11 +265,6 @@ class ProductList {
   // Принимает: items — массив товаров для установки
   // Возвращает: void
   setItems(items: IProduct[]): void;
-
-  // Получает товар по идентификатору
-  // Принимает: id — уникальный идентификатор товара
-  // Возвращает: IProduct — найденный товар или undefined, если товар не найден
-  getItemById(id: string): IProduct | undefined;
 }
 ```
 
@@ -139,7 +279,7 @@ class Basket {
   products: IProduct[];
 
   // Общая стоимость товаров
-  totalPrice: Price;
+  totalPrice: TPrice;
 
   // Добавляет товар в корзину
   // Принимает: product — товар для добавления в корзину
@@ -156,8 +296,8 @@ class Basket {
   clear(): void;
 
   // Вычисляет общую стоимость товаров в корзине
-  // Возвращает: Price — общая стоимость всех товаров в корзине (number или null)
-  calculateTotalPrice(): Price;
+  // Возвращает: TPrice — общая стоимость всех товаров в корзине (number или null)
+  calculateTotalPrice(): TPrice;
 
   // Получает товар по идентификатору
   // Принимает: id — уникальный идентификатор товара
@@ -176,7 +316,7 @@ class Basket {
 ``` TypeScript
 class OrderForm {
   // Способ оплаты (онлайн или при получении)
-  payment: PaymentMethod;
+  payment: TPaymentMethod;
 
   // Адрес доставки
   deliveryAddress: string;
@@ -188,12 +328,12 @@ class OrderForm {
   phone: string;
 
   // Общая стоимость заказа
-  totalPrice: Price;
+  totalPrice: TPrice;
 
   // Устанавливает способ оплаты
   // Принимает: method — способ оплаты ('online' или 'upon_receipt')
   // Возвращает: void
-  setPayment(method: PaymentMethod): void;
+  setPayment(method: TPaymentMethod): void;
 
   // Устанавливает адрес доставки
   // Принимает: address — строка с адресом доставки
@@ -213,7 +353,7 @@ class OrderForm {
   // Устанавливает общую стоимость заказа
   // Принимает: price — стоимость заказа (number или null)
   // Возвращает: void
-  setTotalPrice(price: Price): void;
+  setTotalPrice(price: TPrice): void;
 
   // Проверяет валидность всей формы заказа
   // Возвращает: boolean — true, если все поля формы валидны, false — если есть ошибки
@@ -251,253 +391,111 @@ class OrderForm {
 }
 ```
 
-Класс `EventEmitter` является брокером событий для связи между компонентами:
+Класс `ApiResponse` представляет универсальный клиент для работы с API:
 
-``` TypeScript
-class EventEmitter {
-  // Карта событий и их обработчиков
-  _events: Map<EventName, Set<Subscriber>>;
+```TypeScript
+class ApiResponse<T> {
+  // Базовый URL для всех запросов к API
+  baseUrl: string;
 
-  // Устанавливает обработчик на событие
-  // Принимает: eventName — название события (строка или RegExp), callback — функция-обработчик
-  // Возвращает: void
-  on<T extends object>(eventName: EventName, callback: (data: T) => void): void;
+  // Выполняет GET-запрос по указанному URI
+  // Принимает: uri — строка с адресом запроса, method — HTTP-метод (по умолчанию 'GET')
+  // Возвращает: Promise<T> — промис с результатом запроса
+  get<T>(uri: string, method?: TApiMethod): Promise<T>;
 
-  // Снимает обработчик с события
-  // Принимает: eventName — название события, callback — функция-обработчик для удаления
-  // Возвращает: void
-  off(eventName: EventName, callback: (data: unknown) => void): void;
-
-  // Инициирует событие с данными
-  // Принимает: eventName — название события, data — данные для передачи в обработчик
-  // Возвращает: void
-  emit<T extends object>(eventName: string, data?: T): void;
-
-  // Создает триггер для события с контекстом
-  // Принимает: eventName — название события, context — контекстные данные
-  // Возвращает: Function — функцию-триггер, которая при вызове генерирует событие
-  trigger<T extends object>(eventName: string, context?: Partial<T>): (data: T) => void;
-
-  // Устанавливает обработчик на все события
-  // Принимает: callback — функция-обработчик для всех событий
-  // Возвращает: void
-  onAll(callback: (event: { eventName: string, data: unknown }) => void): void;
-
-  // Сбрасывает все обработчики событий
-  // Возвращает: void
-  offAll(): void;
+  // Выполняет POST-запрос по указанному URI с передачей данных
+  // Принимает: uri — строка с адресом запроса, data — объект с данными, method — HTTP-метод (по умолчанию 'POST')
+  // Возвращает: Promise<T> — промис с результатом запроса
+  post<T>(uri: string, data: object, method?: TApiMethod): Promise<T>;
 }
 ```
 
-Класс `ProductModel` — модель каталога товаров:
+Класс `View` — базовый класс для всех представлений (View):
 
-``` TypeScript
-class ProductModel {
-  // Получает список всех товаров из источника данных (например, API)
-  getProducts(): Promise<IProduct[]>;
+```TypeScript
+class View {
+  // Отображает данные во View
+  render(data?: unknown): void;
 
-  // Получает товар по идентификатору
-  getProductById(id: string): Promise<IProduct | undefined>;
+  // Показывает View
+  show(): void;
+
+  // Скрывает View
+  hide(): void;
 }
 ```
 
-Класс `BasketModel` — модель корзины:
+Класс `ProductView` — представление для каталога товаров:
 
-``` TypeScript
-class BasketModel {
-  // Возвращает текущее состояние корзины
-  getItems(): IBasket;
-
-  // Добавляет товар в корзину
-  addItem(product: IProduct): void;
-
-  // Удаляет товар из корзины по идентификатору
-  removeItem(productId: string): void;
-
-  // Очищает корзину
-  clear(): void;
+```TypeScript
+class ProductView extends View {
+  // Устанавливает обработчик выбора товара
+  onProductSelect(callback: (id: string) => void): void;
 }
 ```
 
-Класс `OrderModel` — модель заказа:
+Класс `BasketView` — представление для корзины:
 
-``` TypeScript
-class OrderModel {
-  // Возвращает текущую форму заказа
-  getOrderForm(): IOrderForm;
-
-  // Обновляет данные формы заказа
-  updateOrderForm(data: Partial<IOrderForm>): void;
-
-  // Отправляет заказ
-  submitOrder(): Promise<IOrderForm>;
-}
-```
-
-Класс `ProductListView` — отображение списка товаров:
-
-``` TypeScript
-class ProductListView {
-  // Отображает список товаров
-  renderProducts(products: IProduct[]): void;
-
-  // Устанавливает обработчик клика по товару
-  onProductClick(callback: (id: string) => void): void;
-
-  // Базовый метод рендера
-  render(data?: object): HTMLElement;
-}
-```
-
-Класс `ProductDetailView` — отображение детальной информации о товаре:
-
-``` TypeScript
-class ProductDetailView {
-  // Отображает детальную информацию о товаре
-  renderProduct(product: IProduct): void;
-
-  // Устанавливает обработчик клика по кнопке "Купить"
-  onBuyClick(callback: () => void): void;
-
-  // Устанавливает обработчик клика по кнопке "Убрать"
-  onRemoveClick(callback: () => void): void;
-
-  // Базовый метод рендера
-  render(data?: object): HTMLElement;
-}
-```
-
-Класс `BasketView` — отображение корзины:
-
-``` TypeScript
-class BasketView {
-  // Отображает содержимое корзины
-  renderBasket(basket: IBasket): void;
-
+```TypeScript
+class BasketView extends View {
   // Устанавливает обработчик удаления товара из корзины
   onRemoveItem(callback: (id: string) => void): void;
 
-  // Устанавливает обработчик клика по кнопке "Оформить"
-  onCheckoutClick(callback: () => void): void;
-
-  // Базовый метод рендера
-  render(data?: object): HTMLElement;
+  // Устанавливает обработчик перехода к оформлению заказа
+  onCheckout(callback: () => void): void;
 }
 ```
 
-Класс `ModalView` — отображение модальных окон:
+Класс `OrderFormView` — представление для формы заказа:
 
-``` TypeScript
-class ModalView {
-  // Открывает модальное окно по идентификатору
-  open(modalId: string): void;
-
-  // Закрывает модальное окно
-  close(): void;
-
-  // Устанавливает обработчик закрытия модального окна
-  onClose(callback: () => void): void;
-
-  // Базовый метод рендера
-  render(data?: object): HTMLElement;
-}
-```
-
-Класс `OrderFormView` — отображение формы заказа:
-
-``` TypeScript
-class OrderFormView {
-  // Отображает текущий шаг формы заказа
-  renderStep(step: number, data: Partial<IOrderForm>): void;
-
-  // Устанавливает обработчик перехода к следующему шагу
-  onNextStep(callback: () => void): void;
-
+```TypeScript
+class OrderFormView extends View {
   // Устанавливает обработчик отправки формы заказа
   onSubmit(callback: (data: IOrderForm) => void): void;
-
-  // Показывает сообщение об ошибке
-  showError(message: string): void;
-
-  // Скрывает сообщение об ошибке
-  clearError(): void;
-
-  // Базовый метод рендера
-  render(data?: object): HTMLElement;
 }
 ```
 
-Класс `ApiClient` — клиент для работы с API:
+Класс `Presenter` — базовый класс для всех презентеров:
 
-``` TypeScript
-class ApiClient {
-  // Получает список товаров с сервера
-  fetchProducts(): Promise<IProduct[]>;
+```TypeScript
+class Presenter {
+  // Инициализация презентера
+  init(): void;
 
-  // Получает товар по идентификатору с сервера
-  fetchProductById(id: string): Promise<IProduct>;
-
-  // Отправляет заказ на сервер
-  submitOrder(order: IOrderForm): Promise<{ orderId: string; totalPrice: number }>;
+  // Уничтожение презентера
+  destroy(): void;
 }
 ```
 
-## События (Events)
+Класс `ProductPresenter` — презентер для каталога товаров:
 
-В системе используется брокер событий для связи между компонентами архитектуры MVP. События позволяют компонентам общаться друг с другом без прямых зависимостей.
-
-### Основные события
-
-#### События товаров (Product Events)
-``` TypeScript
-// Товар выбран пользователем
-'product:selected' — событие выбора товара
-
-// Товар добавлен в корзину
-'product:added' — событие добавления товара в корзину
-
-// Товар удален из корзины
-'product:removed' — событие удаления товара из корзины
+```TypeScript
+class ProductPresenter extends Presenter {}
 ```
 
-#### События корзины (Basket Events)
-``` TypeScript
-// Корзина обновлена
-'basket:updated' — событие обновления корзины
+Класс `BasketPresenter` — презентер для корзины:
 
-// Корзина очищена
-'basket:cleared' — событие очистки корзины
-
-// Изменено количество товаров в корзине
-'basket:itemCountChanged' — событие изменения количества товаров
+```TypeScript
+class BasketPresenter extends Presenter {}
 ```
 
-#### События заказа (Order Events)
-``` TypeScript
-// Форма заказа отправлена
-'order:submitted' — событие отправки формы заказа
+Класс `OrderPresenter` — презентер для оформления заказа:
 
-// Заказ успешно создан
-'order:success' — событие успешного создания заказа
-
-// Ошибка при создании заказа
-'order:error' — событие ошибки при создании заказа
+```TypeScript
+class OrderPresenter extends Presenter {}
 ```
 
-#### События модальных окон (Modal Events)
-``` TypeScript
-// Модальное окно открыто
-'modal:opened' — событие открытия модального окна
+Класс `EventEmitter` — брокер событий для взаимодействия между компонентами:
 
-// Модальное окно закрыто
-'modal:closed' — событие закрытия модального окна
-```
+```TypeScript
+class EventEmitter {
+  // Подписка на событие
+  on(event: string, listener: (...args: unknown[]) => void): void;
 
-#### События валидации (Validation Events)
-``` TypeScript
-// Ошибка валидации
-'validation:error' — событие ошибки валидации
+  // Отписка от события
+  off(event: string, listener: (...args: unknown[]) => void): void;
 
-// Успешная валидация
-'validation:success' — событие успешной валидации
+  // Вызов события
+  emit(event: string, ...args: unknown[]): void;
+}
 ```
