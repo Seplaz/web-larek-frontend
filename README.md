@@ -509,34 +509,80 @@ class View {
 }
 ```
 
-Класс `ProductView` — представление для каталога товаров:
+Класс `PageView` — представление начальной страницы:
 
 ```TypeScript
-class ProductView extends View {
+class PageView extends View {
   /**
-   * Конструктор класса ProductView
+   * Конструктор класса PageView
    */
   constructor();
 
   /**
-   * Устанавливает обработчик выбора товара
-   * @param callback — функция, вызываемая при выборе товара (id товара)
+   * Отображает список товаров на странице
+   * @param products — массив товаров
    */
-  onProductSelect(callback: (id: string) => void): void;
+  renderProductList(products: Product[]): void;
+
+  /**
+   * Устанавливает обработчик открытия корзины
+   * @param callback — функция, вызываемая при клике на кнопку корзины
+   */
+  onBasketOpen(callback: () => void): void;
+
+  /**
+   * Отображает счетчик товаров в корзине
+   * @param count — количество товаров
+   */
+  renderBasketCounter(count: number): void;
 }
 ```
 
-Класс `BasketView` — представление для корзины:
+Класс `ProductCardView` — представление карточки товара:
 
 ```TypeScript
-class BasketView extends View {
+class ProductCardView extends View {
   /**
-   * Конструктор класса BasketView
+   * Конструктор класса ProductCardView
    */
   constructor();
 
   /**
-   * Устанавливает обработчик удаления товара
+   * Устанавливает обработчик клика по карточке
+   * @param callback — функция, вызываемая при выборе товара (id товара)
+   */
+  onSelect(callback: (id: string) => void): void;
+}
+```
+
+Класс `ProductModalView` — представление модального окна товара:
+
+```TypeScript
+class ProductModalView extends View {
+  /**
+   * Конструктор класса ProductModalView
+   */
+  constructor();
+
+  /**
+   * Устанавливает обработчик добавления товара в корзину
+   * @param callback — функция, вызываемая при добавлении товара (id товара)
+   */
+  onBuy(callback: (id: string) => void): void;
+}
+```
+
+Класс `BasketModalView` — представление модального окна корзины:
+
+```TypeScript
+class BasketModalView extends View {
+  /**
+   * Конструктор класса BasketModalView
+   */
+  constructor();
+
+  /**
+   * Устанавливает обработчик удаления товара из корзины
    * @param callback — функция, вызываемая при удалении товара (id товара)
    */
   onRemoveItem(callback: (id: string) => void): void;
@@ -546,6 +592,25 @@ class BasketView extends View {
    * @param callback — функция, вызываемая при переходе к оформлению
    */
   onCheckout(callback: () => void): void;
+}
+```
+
+Класс `BasketItemView` — представление отдельного товара в корзине:
+
+```TypeScript
+class BasketItemView extends View {
+  /**
+   * Конструктор класса BasketItemView
+   * @param index — индекс товара в корзине
+   * @param product — товар
+   */
+  constructor(index: number, product: Product);
+
+  /**
+   * Устанавливает обработчик удаления товара
+   * @param callback — функция, вызываемая при удалении
+   */
+  onRemove(callback: () => void): void;
 }
 ```
 
@@ -597,25 +662,6 @@ class OrderSuccessView extends View {
    * @param totalPrice — стоимость заказа
    */
   render(totalPrice: TPrice): void;
-}
-```
-
-Класс `BasketItem` — отдельный товар в корзине:
-
-```TypeScript
-class BasketItem extends View {
-  /**
-   * Конструктор класса BasketItem
-   * @param index — индекс товара в корзине
-   * @param product — товар
-   */
-  constructor(index: number, product: Product);
-
-  /**
-   * Устанавливает обработчик удаления товара
-   * @param callback — функция, вызываемая при удалении
-   */
-  onRemove(callback: () => void): void;
 }
 ```
 

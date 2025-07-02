@@ -69,17 +69,39 @@ export interface IView {
   hide(): void;
 }
 
-export interface IProductView extends IView {
-  onProductSelect(callback: (id: string) => void): void;
+export interface IPageView extends IView {
+  renderProductList(products: IProduct[]): void;
+  onBasketOpen(callback: () => void): void;
+  renderBasketCounter(count: number): void;
 }
 
-export interface IBasketView extends IView {
+export interface IProductCardView extends IView {
+  onSelect(callback: (id: string) => void): void;
+}
+
+export interface IProductModalView extends IView {
+  onBuy(callback: (id: string) => void): void;
+}
+
+export interface IBasketModalView extends IView {
   onRemoveItem(callback: (id: string) => void): void;
   onCheckout(callback: () => void): void;
 }
 
-export interface IOrderFormView extends IView {
-  onSubmit(callback: (data: IOrderForm) => void): void;
+export interface IBasketItemView extends IView {
+  onRemove(callback: () => void): void;
+}
+
+export interface IOrderDeliveryView extends IView {
+  onNext(callback: (data: { payment: TPaymentMethod; deliveryAddress: string }) => void): void;
+}
+
+export interface IOrderContactsView extends IView {
+  onSubmit(callback: (data: { email: string; phone: string }) => void): void;
+}
+
+export interface IOrderSuccessView extends IView {
+  render(totalPrice: TPrice): void;
 }
 
 export interface IPresenter {
