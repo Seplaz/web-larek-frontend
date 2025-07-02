@@ -1,6 +1,7 @@
 export type TPaymentMethod = 'online' | 'upon_receipt';
 export type TPrice = number | null;
 export type TApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type TEventName = string | RegExp;
 
 export interface IProduct {
   id: string;
@@ -93,7 +94,7 @@ export interface IBasketPresenter extends IPresenter {}
 export interface IOrderPresenter extends IPresenter {}
 
 export interface IEventEmitter {
-  on(event: string, listener: (...args: unknown[]) => void): void;
-  off(event: string, listener: (...args: unknown[]) => void): void;
-  emit(event: string, ...args: unknown[]): void;
+  on<T extends object>(event: TEventName, callback: (data: T) => void): void;
+  emit<T extends object>(event: string, data?: T): void;
+  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
 }

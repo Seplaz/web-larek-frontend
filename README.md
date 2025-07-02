@@ -4,7 +4,7 @@
 
 Проект интернет-магазин с товарами для веб-разработчиков — Web-ларёк. В нём можно посмотреть каталог товаров, добавить товары в корзину и сделать заказ.
 
-**Стек:** HTML, SCSS, TS, Webpack
+**Стек:** `HTML`, `SCSS`, `TS`, `Webpack`
 
 ## Функциональные требования
 
@@ -82,7 +82,7 @@ yarn build
 
 ## Архитектура
 
-Архитектура: MVP (Model-View-Presenter) с брокером событий (EventEmitter) для связи между слоями.
+Архитектура: MVP (Model-View-Presenter) с брокером событий `EventEmitter` для связи между слоями.
 
 ### Принципы архитектуры:
 - **Изолированность** — отдельные части системы могут использоваться как самостоятельные решения
@@ -97,34 +97,37 @@ yarn build
 ### Из каких основных частей состоит архитектура проекта:
 
 1. **Данные (Model):**
-   - Product — модель товара
-   - ProductList — коллекция товаров
-   - Basket — корзина покупок
-   - UserData — данные пользователя
-   - OrderForm — форма заказа
+   - `Product` — модель товара
+   - `ProductList` — коллекция товаров
+   - `Basket` — корзина покупок
+   - `UserData` — данные пользователя
+   - `OrderForm` — форма заказа
 
 2. **Отображения (View):**
-   - ProductCard — карточка товара
-   - ProductModal — модальное окно товара
-   - BasketModal — модальное окно корзины
-   - OrderForm — форма заказа
-   - OrderSuccess — страница успешного заказа
+   - `PageView` — начальная страница приложения
+   - `ProductCard` — карточка товара
+   - `ProductModal` — модальное окно товара
+   - `BasketModal` — модальное окно корзины
+   - `BasketItem` — отдельный товар в корзине
+   - `OrderDeliveryView` — первый шаг оформления заказа (доставка и оплата)
+   - `OrderContactsView` — второй шаг оформления заказа (контактные данные)
+   - `OrderSuccess` — страница успешного заказа
 
 3. **Координаторы (Presenter):**
-   - ProductPresenter — управление отображением товаров
-   - BasketPresenter — управление корзиной
-   - OrderPresenter — управление процессом заказа
+   - `ProductPresenter` — управление отображением товаров
+   - `BasketPresenter` — управление корзиной
+   - `OrderPresenter` — управление процессом заказа
 
 4. **Брокер событий (EventEmitter):**
    - Обеспечивает связь между компонентами через события
    - Позволяет компонентам взаимодействовать без прямых зависимостей
 
 ### Как части взаимодействуют:
-- Presenter получает данные от Model
-- Presenter обновляет View
-- View отправляет события через EventEmitter
-- Presenter обрабатывает события и обновляет Model
-- Model уведомляет об изменениях через события
+- `Presenter` получает данные от `Model`
+- `Presenter` обновляет `View`
+- `View` отправляет события через `EventEmitter`
+- `Presenter` обрабатывает события и обновляет `Model`
+- `Model` уведомляет об изменениях через события
 
 ### Какие данные используются в приложении:
 - **Товары (Product):** id, image, category, title, description, price
@@ -133,9 +136,13 @@ yarn build
 - **Заказ (OrderForm):** данные пользователя + способ оплаты + стоимость
 
 ### Из каких компонентов состоит приложение:
+- **PageView** — отвечает за отображение начальной страницы приложения
 - **ProductCard** — отображает карточку товара в каталоге
 - **ProductModal** — показывает детальную информацию о товаре
 - **BasketModal** — отображает корзину покупок
+- **BasketItem** — отображает отдельный товар в корзине
+- **OrderDeliveryView** — первый шаг оформления заказа (доставка и оплата)
+- **OrderContactsView** — второй шаг оформления заказа (контактные данные)
 - **OrderForm** — форма оформления заказа с двумя шагами
 - **OrderSuccess** — страница успешного заказа
 - **Modal** — базовый компонент для модальных окон
@@ -144,42 +151,54 @@ yarn build
 
 ## Описание компонентов
 
+### Компонент PageView
+Компонент `PageView` отвечает за отображение начальной страницы приложения. В нем отображается список карточек товаров (каталог), а также присутствует кнопка для открытия корзины и счетчик количества товаров в корзине. Компонент управляет структурой главной страницы и взаимодействием пользователя с основными элементами интерфейса.
+
 ### Компонент ProductCard
-Компонент ProductCard отображает карточку товара в каталоге, используя компонент Button для кнопки "Купить". При клике на карточку открывается модальное окно с детальной информацией о товаре.
+Компонент `ProductCard` отображает карточку товара в каталоге. При клике на карточку открывается модальное окно с детальной информацией о товаре.
 
 ### Компонент ProductModal
-Компонент ProductModal отображает детальную информацию о товаре в модальном окне, используя базовый компонент Modal. Содержит кнопки "Купить" и "Убрать" для управления корзиной.
+Компонент `ProductModal` отображает детальную информацию о товаре в модальном окне, используя базовый компонент `Modal`. Содержит кнопки "Купить" и "Недоступно" для добавления товара в корзину.
 
 ### Компонент BasketModal
-Компонент BasketModal отображает корзину покупок в модальном окне, используя базовый компонент Modal. Показывает список товаров, общую стоимость и кнопку перехода к оформлению заказа.
+Компонент `BasketModal` отображает корзину покупок в модальном окне, используя базовый компонент `Modal`. Показывает список товаров, общую стоимость и кнопку перехода к оформлению заказа.
+
+### Компонент BasketItem
+Компонент `BasketItem` отвечает за отображение отдельного товара в корзине. Показывает информацию о товаре (индекс, наименование и цена), а также кнопку для удаления товара из корзины.
+
+### Компонент OrderDeliveryView
+Компонент `OrderDeliveryView` отвечает за отображение первого шага оформления заказа: выбор способа оплаты и ввод адреса доставки. Содержит выбор способа оплаты и поле для ввода адреса, а также кнопку перехода к следующему шагу. Кнопка становится недоступной, если не выбран способ оплаты или не введён адрес доставки.
+
+### Компонент OrderContactsView
+Компонент `OrderContactsView` отвечает за отображение второго шага оформления заказа: ввод контактных данных пользователя (email и телефон). Содержит соответствующие поля и кнопку для завершения оформления заказа. Кнопка становится недоступной, если не заполнены контактные данные пользователя.
 
 ### Компонент OrderForm
-Компонент OrderForm управляет процессом оформления заказа с двумя шагами, используя базовый компонент Form. На первом шаге собирает способ оплаты и адрес доставки, на втором — контактные данные покупателя.
+Компонент `OrderForm` управляет процессом оформления заказа с двумя шагами, используя базовый компонент `Form`. На первом шаге собирает способ оплаты и адрес доставки, на втором — контактные данные покупателя (email и номер телефона). На первом шаге содержит кнопку "Далее", на вотором шаге кнопку "Оплатить". Обе кнопки становятся недоступны, если не выбран способ оплаты, не введен адрес доставки или не заполнены контактные данные пользователя.
 
 ### Компонент OrderSuccess
-Компонент OrderSuccess отображает страницу успешного заказа с информацией о стоимости и номером заказа.
+Компонент `OrderSuccess` отображает страницу успешного заказа с информацией о стоимости заказа и кнопкой "За новыми покупками!".
 
 ### Компонент Modal
-Компонент Modal обеспечивает базовую функциональность модальных окон. Его функции: открытие и закрытие окна, обработка кликов вне окна, управление фокусом.
+Компонент `Modal` обеспечивает базовую функциональность модальных окон. Его функции: открытие и закрытие окна, обработка кликов вне окна, управление фокусом.
 
 ### Компонент Button
-Компонент Button обеспечивает отображение кнопок в интерфейсе. Его функции: настройка внешнего вида, обработка кликов, управление состоянием (активна/неактивна).
+Компонент `Button` обеспечивает отображение кнопок в интерфейсе. Его функции: настройка внешнего вида, обработка кликов, управление состоянием (активна/неактивна).
 
 ### Компонент Form
-Компонент Form обеспечивает базовую функциональность форм. Его функции: валидация полей, сбор данных, отображение ошибок.
+Компонент `Form` обеспечивает базовую функциональность форм. Его функции: валидация полей, сбор данных, отображение ошибок.
 
 ## Описание типов и классов
 
 ### Базовые типы
 
-Для стоимости товара есть отдельный тип `Price`, который может быть `number` или `null`
+Для стоимости товара есть отдельный тип `TPrice`, который может быть `number` или `null`
 (если цена товара отсутствует, например: бесценно):
 
 ``` TypeScript
 type TPrice = number | null;
 ```
 
-Тип для способа оплаты `PaymentMethod`, который может принимать два значения:
+Тип для способа оплаты `TPaymentMethod`, который может принимать два значения:
 - `online` - оплата онлайн
 - `upon_receipt` - оплата при получении
 
@@ -198,9 +217,505 @@ type TPaymentMethod = 'online' | 'upon_receipt';
 type TApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 ```
 
+Тип для имени события `TEventName`, который может быть строкой или регулярным выражением:
+
+```TypeScript
+type TEventName = string | RegExp;
+```
+
+### Базовые классы
+
+Класс `Product` — модель товара:
+
+```TypeScript
+class Product {
+  /**
+   * Конструктор класса Product
+   * @param id — идентификатор товара
+   * @param image — ссылка на картинку товара
+   * @param category — категория товара
+   * @param title — наименование товара
+   * @param description — описание товара
+   * @param price — стоимость товара
+   */
+  constructor(
+    public id: string,
+    public image: string,
+    public category: string,
+    public title: string,
+    public description: string,
+    public price: TPrice
+  ) {}
+}
+```
+
+Класс `ProductList` — коллекция товаров:
+
+```TypeScript
+class ProductList {
+  /**
+   * Массив товаров
+   */
+  products: Product[];
+
+  /**
+   * Конструктор класса ProductList
+   * @param products — массив товаров (по умолчанию пустой)
+   */
+  constructor(products: Product[] = []);
+
+  /**
+   * Устанавливает список товаров
+   * @param items — массив товаров для установки
+   */
+  setItems(items: Product[]): void;
+}
+```
+
+Класс `Basket` — корзина покупок:
+
+```TypeScript
+class Basket {
+  /**
+   * Индекс товара в корзине
+   */
+  index: number;
+  /**
+   * Массив товаров в корзине
+   */
+  products: Product[];
+  /**
+   * Общая стоимость товаров
+   */
+  totalPrice: TPrice;
+
+  /**
+   * Конструктор класса Basket
+   * @param products — массив товаров (по умолчанию пустой)
+   */
+  constructor(products: Product[] = []);
+
+  /**
+   * Добавляет товар в корзину
+   * @param product — товар для добавления
+   */
+  addItem(product: Product): void;
+
+  /**
+   * Удаляет товар из корзины по id
+   * @param id — идентификатор товара
+   */
+  removeItem(id: string): void;
+
+  /**
+   * Очищает корзину
+   */
+  clear(): void;
+
+  /**
+   * Вычисляет общую стоимость товаров
+   * @returns общая стоимость (TPrice)
+   */
+  calculateTotalPrice(): TPrice;
+
+  /**
+   * Получает товар по id
+   * @param id — идентификатор товара
+   * @returns найденный товар или undefined
+   */
+  getItemById(id: string): Product | undefined;
+
+  /**
+   * Проверяет, есть ли товар в корзине
+   * @param id — идентификатор товара
+   * @returns true, если товар найден
+   */
+  contains(id: string): boolean;
+}
+```
+
+Класс `OrderForm` — форма заказа:
+
+```TypeScript
+class OrderForm implements IUserData {
+  /**
+   * Способ оплаты
+   */
+  payment: TPaymentMethod;
+  /**
+   * Адрес доставки
+   */
+  deliveryAddress: string;
+  /**
+   * Email покупателя
+   */
+  email: string;
+  /**
+   * Телефон покупателя
+   */
+  phone: string;
+  /**
+   * Общая стоимость заказа
+   */
+  totalPrice: TPrice;
+
+  /**
+   * Конструктор класса OrderForm
+   * @param payment — способ оплаты
+   * @param deliveryAddress — адрес доставки
+   * @param email — email покупателя
+   * @param phone — телефон покупателя
+   * @param totalPrice — общая стоимость заказа
+   */
+  constructor(payment: TPaymentMethod, deliveryAddress: string, email: string, phone: string, totalPrice: TPrice);
+
+  /**
+   * Устанавливает способ оплаты
+   * @param method — способ оплаты
+   */
+  setPayment(method: TPaymentMethod): void;
+
+  /**
+   * Устанавливает адрес доставки
+   * @param address — адрес доставки
+   */
+  setDeliveryAddress(address: string): void;
+
+  /**
+   * Устанавливает email покупателя
+   * @param email — email
+   */
+  setEmail(email: string): void;
+
+  /**
+   * Устанавливает телефон покупателя
+   * @param phone — телефон
+   */
+  setPhone(phone: string): void;
+
+  /**
+   * Устанавливает общую стоимость заказа
+   * @param price — стоимость заказа
+   */
+  setTotalPrice(price: TPrice): void;
+
+  /**
+   * Проверяет валидность всей формы
+   * @returns true, если форма валидна
+   */
+  validate(): boolean;
+
+  /**
+   * Проверяет валидность текущего шага
+   * @returns true, если шаг валиден
+   */
+  validateStep(): boolean;
+
+  /**
+   * Проверяет валидность поля
+   * @param field — название поля
+   * @returns true, если поле валидно
+   */
+  validateField(field: keyof OrderForm): boolean;
+
+  /**
+   * Получает сообщение об ошибке валидации
+   * @returns строка с ошибкой или null
+   */
+  getValidationError(): string | null;
+
+  /**
+   * Показать сообщение об ошибке
+   * @param message — текст ошибки
+   */
+  showError(message: string): void;
+
+  /**
+   * Скрыть сообщение об ошибке
+   */
+  hideError(): void;
+
+  /**
+   * Получает данные формы
+   * @returns объект с данными формы
+   */
+  getData(): OrderForm;
+
+  /**
+   * Очищает форму
+   */
+  clear(): void;
+}
+```
+
+Класс `ApiResponse` — универсальный клиент для работы с API:
+
+```TypeScript
+class ApiResponse<T> {
+  /**
+   * Базовый URL для всех запросов
+   */
+  baseUrl: string;
+
+  /**
+   * Конструктор класса ApiResponse
+   * @param baseUrl — базовый URL
+   */
+  constructor(baseUrl: string);
+
+  /**
+   * Выполняет GET-запрос
+   * @param uri — адрес запроса
+   * @param method — HTTP-метод (по умолчанию 'GET')
+   * @returns промис с результатом
+   */
+  get<T>(uri: string, method?: TApiMethod): Promise<T>;
+
+  /**
+   * Выполняет POST-запрос
+   * @param uri — адрес запроса
+   * @param data — данные для отправки
+   * @param method — HTTP-метод (по умолчанию 'POST')
+   * @returns промис с результатом
+   */
+  post<T>(uri: string, data: object, method?: TApiMethod): Promise<T>;
+}
+```
+
+Класс `View` — базовый класс для всех представлений:
+
+```TypeScript
+class View {
+  /**
+   * Конструктор класса View
+   */
+  constructor();
+
+  /**
+   * Отображает данные во View
+   * @param data — данные для отображения (опционально)
+   */
+  render(data?: unknown): void;
+
+  /**
+   * Показывает View
+   */
+  show(): void;
+
+  /**
+   * Скрывает View
+   */
+  hide(): void;
+}
+```
+
+Класс `ProductView` — представление для каталога товаров:
+
+```TypeScript
+class ProductView extends View {
+  /**
+   * Конструктор класса ProductView
+   */
+  constructor();
+
+  /**
+   * Устанавливает обработчик выбора товара
+   * @param callback — функция, вызываемая при выборе товара (id товара)
+   */
+  onProductSelect(callback: (id: string) => void): void;
+}
+```
+
+Класс `BasketView` — представление для корзины:
+
+```TypeScript
+class BasketView extends View {
+  /**
+   * Конструктор класса BasketView
+   */
+  constructor();
+
+  /**
+   * Устанавливает обработчик удаления товара
+   * @param callback — функция, вызываемая при удалении товара (id товара)
+   */
+  onRemoveItem(callback: (id: string) => void): void;
+
+  /**
+   * Устанавливает обработчик перехода к оформлению заказа
+   * @param callback — функция, вызываемая при переходе к оформлению
+   */
+  onCheckout(callback: () => void): void;
+}
+```
+
+Класс `OrderDeliveryView` — первый шаг оформления заказа:
+
+```TypeScript
+class OrderDeliveryView extends View {
+  /**
+   * Конструктор класса OrderDeliveryView
+   */
+  constructor();
+
+  /**
+   * Устанавливает обработчик перехода к следующему шагу
+   * @param callback — функция, вызываемая при переходе (данные доставки)
+   */
+  onNext(callback: (data: { payment: TPaymentMethod; deliveryAddress: string }) => void): void;
+}
+```
+
+Класс `OrderContactsView` — второй шаг оформления заказа:
+
+```TypeScript
+class OrderContactsView extends View {
+  /**
+   * Конструктор класса OrderContactsView
+   */
+  constructor();
+
+  /**
+   * Устанавливает обработчик отправки контактных данных
+   * @param callback — функция, вызываемая при отправке (email и телефон)
+   */
+  onSubmit(callback: (data: { email: string; phone: string }) => void): void;
+}
+```
+
+Класс `OrderSuccessView` — страница успешного заказа:
+
+```TypeScript
+class OrderSuccessView extends View {
+  /**
+   * Конструктор класса OrderSuccessView
+   */
+  constructor();
+
+  /**
+   * Отображает информацию об успешном заказе
+   * @param totalPrice — стоимость заказа
+   */
+  render(totalPrice: TPrice): void;
+}
+```
+
+Класс `BasketItem` — отдельный товар в корзине:
+
+```TypeScript
+class BasketItem extends View {
+  /**
+   * Конструктор класса BasketItem
+   * @param index — индекс товара в корзине
+   * @param product — товар
+   */
+  constructor(index: number, product: Product);
+
+  /**
+   * Устанавливает обработчик удаления товара
+   * @param callback — функция, вызываемая при удалении
+   */
+  onRemove(callback: () => void): void;
+}
+```
+
+Класс `Presenter` — базовый класс для всех презентеров:
+
+```TypeScript
+class Presenter {
+  /**
+   * Конструктор класса Presenter
+   */
+  constructor();
+
+  /**
+   * Инициализация презентера
+   */
+  init(): void;
+
+  /**
+   * Уничтожение презентера
+   */
+  destroy(): void;
+}
+```
+
+Класс `ProductPresenter` — презентер для каталога товаров:
+
+```TypeScript
+class ProductPresenter extends Presenter {
+  /**
+   * Конструктор класса ProductPresenter
+   * @param view — представление каталога
+   * @param model — модель списка товаров
+   */
+  constructor(view: ProductView, model: ProductList);
+}
+```
+
+Класс `BasketPresenter` — презентер для корзины:
+
+```TypeScript
+class BasketPresenter extends Presenter {
+  /**
+   * Конструктор класса BasketPresenter
+   * @param view — представление корзины
+   * @param model — модель корзины
+   */
+  constructor(view: BasketView, model: Basket);
+}
+```
+
+Класс `OrderPresenter` — презентер для оформления заказа:
+
+```TypeScript
+class OrderPresenter extends Presenter {
+  /**
+   * Конструктор класса OrderPresenter
+   * @param deliveryView — представление первого шага
+   * @param contactsView — представление второго шага
+   * @param model — модель заказа
+   */
+  constructor(deliveryView: OrderDeliveryView, contactsView: OrderContactsView, model: OrderForm);
+}
+```
+
+Класс `EventEmitter` — брокер событий для взаимодействия между компонентами:
+
+```TypeScript
+class EventEmitter {
+  /**
+   * Конструктор класса EventEmitter
+   */
+  constructor();
+
+  /**
+   * Подписка на событие
+   * @param event — имя события (строка или RegExp)
+   * @param callback — функция-обработчик
+   */
+  on<T extends object>(event: TEventName, callback: (data: T) => void): void;
+
+  /**
+   * Вызов события
+   * @param event — имя события
+   * @param data — данные события (опционально)
+   */
+  emit<T extends object>(event: string, data?: T): void;
+
+  /**
+   * Генерирует функцию-триггер для события
+   * @param event — имя события
+   * @param context — контекст (опционально)
+   * @returns функция, которую можно вызывать с данными события
+   */
+  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+}
+```
+
 ### Перечисление событий
 
-Перечисление `Events` содержит все основные события, которые используются для взаимодействия между компонентами приложения через EventEmitter:
+Перечисление `Events` содержит все основные события, которые используются для взаимодействия между компонентами приложения через `EventEmitter`:
 
 ```TypeScript
 enum Events {
@@ -225,277 +740,5 @@ enum Events {
 ```
 
 **Назначение:**  
-Это перечисление используется для стандартизации событий, которые могут возникать в приложении, чтобы компоненты могли реагировать на них через брокер событий (EventEmitter).  
+Это перечисление используется для стандартизации событий, которые могут возникать в приложении, чтобы компоненты могли реагировать на них через брокер событий `EventEmitter`.  
 Каждое событие — это строковая константа, которую удобно использовать для подписки и публикации событий между слоями приложения.
-
-### Базовые классы
-
-Класс `Product` это сам товар:
-
-``` TypeScript
-class Product {
-  // Идентификатор товара
-  id: string;
-
-  // Ссылка на картинку товара
-  image: string;
-
-  // Категория товара
-  category: string;
-
-  // Наименование товара
-  title: string;
-
-  // Описание товара
-  description: string;
-
-  // Стоимость товара
-  price: TPrice;
-}
-```
-
-Класс `ProductList` это список товаров на странице:
-
-``` TypeScript
-class ProductList {
-  // Массив со списком товаров
-  products: IProduct[];
-
-  // Устанавливает список товаров после загрузки из API
-  // Принимает: items — массив товаров для установки
-  // Возвращает: void
-  setItems(items: IProduct[]): void;
-}
-```
-
-Класс `Basket` является корзиной с товарами:
-
-``` TypeScript
-class Basket {
-  // Индекс товара в корзине (1, 2, 3...)
-  index: number;
-
-  // Массив с товарами в корзине
-  products: IProduct[];
-
-  // Общая стоимость товаров
-  totalPrice: TPrice;
-
-  // Добавляет товар в корзину
-  // Принимает: product — товар для добавления в корзину
-  // Возвращает: void
-  addItem(product: IProduct): void;
-
-  // Удаляет товар из корзины по идентификатору
-  // Принимает: id — уникальный идентификатор товара для удаления
-  // Возвращает: void
-  removeItem(id: string): void;
-
-  // Очищает корзину от всех товаров
-  // Возвращает: void
-  clear(): void;
-
-  // Вычисляет общую стоимость товаров в корзине
-  // Возвращает: TPrice — общая стоимость всех товаров в корзине (number или null)
-  calculateTotalPrice(): TPrice;
-
-  // Получает товар по идентификатору
-  // Принимает: id — уникальный идентификатор товара
-  // Возвращает: IProduct | undefined — найденный товар или undefined, если товар не найден
-  getItemById(id: string): IProduct | undefined;
-
-  // Проверяет, есть ли товар в корзине
-  // Принимает: id — уникальный идентификатор товара для проверки
-  // Возвращает: boolean — true, если товар найден в корзине, false — если нет
-  contains(id: string): boolean;
-}
-```
-
-Класс `OrderForm` представляет форму заказа:
-
-``` TypeScript
-class OrderForm {
-  // Способ оплаты (онлайн или при получении)
-  payment: TPaymentMethod;
-
-  // Адрес доставки
-  deliveryAddress: string;
-
-  // Email покупателя
-  email: string;
-
-  // Телефон покупателя
-  phone: string;
-
-  // Общая стоимость заказа
-  totalPrice: TPrice;
-
-  // Устанавливает способ оплаты
-  // Принимает: method — способ оплаты ('online' или 'upon_receipt')
-  // Возвращает: void
-  setPayment(method: TPaymentMethod): void;
-
-  // Устанавливает адрес доставки
-  // Принимает: address — строка с адресом доставки
-  // Возвращает: void
-  setDeliveryAddress(address: string): void;
-
-  // Устанавливает email покупателя
-  // Принимает: email — строка с email адресом
-  // Возвращает: void
-  setEmail(email: string): void;
-
-  // Устанавливает телефон покупателя
-  // Принимает: phone — строка с номером телефона
-  // Возвращает: void
-  setPhone(phone: string): void;
-
-  // Устанавливает общую стоимость заказа
-  // Принимает: price — стоимость заказа (number или null)
-  // Возвращает: void
-  setTotalPrice(price: TPrice): void;
-
-  // Проверяет валидность всей формы заказа
-  // Возвращает: boolean — true, если все поля формы валидны, false — если есть ошибки
-  validate(): boolean;
-
-  // Метод для валидации текущего шага формы
-  // Возвращает: boolean (true, если текущий шаг формы валиден, false - если есть ошибки)
-  validateStep(): boolean;
-
-  // Метод для валидации конкретного поля формы
-  // Принимает: field — название поля для валидации
-  // Возвращает: boolean (true, если поле валидно, false - если есть ошибки)
-  validateField(field: keyof IOrderForm): boolean;
-
-  // Метод для получения сообщения об ошибке валидации
-  // Возвращает: string | null (строка с ошибкой, если есть; null — если ошибок нет)
-  getValidationError(): string | null;
-
-  // Показать сообщение об ошибке
-  // Принимает: message — текст ошибки
-  // Возвращает: void
-  showError(message: string): void;
-
-  // Скрыть сообщение об ошибке
-  // Возвращает: void
-  hideError(): void;
-
-  // Получает данные формы в виде объекта
-  // Возвращает: IOrderForm — объект с данными формы заказа
-  getData(): IOrderForm;
-
-  // Очищает форму заказа, сбрасывая все поля в начальное состояние
-  // Возвращает: void
-  clear(): void;
-}
-```
-
-Класс `ApiResponse` представляет универсальный клиент для работы с API:
-
-```TypeScript
-class ApiResponse<T> {
-  // Базовый URL для всех запросов к API
-  baseUrl: string;
-
-  // Выполняет GET-запрос по указанному URI
-  // Принимает: uri — строка с адресом запроса, method — HTTP-метод (по умолчанию 'GET')
-  // Возвращает: Promise<T> — промис с результатом запроса
-  get<T>(uri: string, method?: TApiMethod): Promise<T>;
-
-  // Выполняет POST-запрос по указанному URI с передачей данных
-  // Принимает: uri — строка с адресом запроса, data — объект с данными, method — HTTP-метод (по умолчанию 'POST')
-  // Возвращает: Promise<T> — промис с результатом запроса
-  post<T>(uri: string, data: object, method?: TApiMethod): Promise<T>;
-}
-```
-
-Класс `View` — базовый класс для всех представлений (View):
-
-```TypeScript
-class View {
-  // Отображает данные во View
-  render(data?: unknown): void;
-
-  // Показывает View
-  show(): void;
-
-  // Скрывает View
-  hide(): void;
-}
-```
-
-Класс `ProductView` — представление для каталога товаров:
-
-```TypeScript
-class ProductView extends View {
-  // Устанавливает обработчик выбора товара
-  onProductSelect(callback: (id: string) => void): void;
-}
-```
-
-Класс `BasketView` — представление для корзины:
-
-```TypeScript
-class BasketView extends View {
-  // Устанавливает обработчик удаления товара из корзины
-  onRemoveItem(callback: (id: string) => void): void;
-
-  // Устанавливает обработчик перехода к оформлению заказа
-  onCheckout(callback: () => void): void;
-}
-```
-
-Класс `OrderFormView` — представление для формы заказа:
-
-```TypeScript
-class OrderFormView extends View {
-  // Устанавливает обработчик отправки формы заказа
-  onSubmit(callback: (data: IOrderForm) => void): void;
-}
-```
-
-Класс `Presenter` — базовый класс для всех презентеров:
-
-```TypeScript
-class Presenter {
-  // Инициализация презентера
-  init(): void;
-
-  // Уничтожение презентера
-  destroy(): void;
-}
-```
-
-Класс `ProductPresenter` — презентер для каталога товаров:
-
-```TypeScript
-class ProductPresenter extends Presenter {}
-```
-
-Класс `BasketPresenter` — презентер для корзины:
-
-```TypeScript
-class BasketPresenter extends Presenter {}
-```
-
-Класс `OrderPresenter` — презентер для оформления заказа:
-
-```TypeScript
-class OrderPresenter extends Presenter {}
-```
-
-Класс `EventEmitter` — брокер событий для взаимодействия между компонентами:
-
-```TypeScript
-class EventEmitter {
-  // Подписка на событие
-  on(event: string, listener: (...args: unknown[]) => void): void;
-
-  // Отписка от события
-  off(event: string, listener: (...args: unknown[]) => void): void;
-
-  // Вызов события
-  emit(event: string, ...args: unknown[]): void;
-}
-```
