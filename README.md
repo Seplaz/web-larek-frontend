@@ -125,7 +125,7 @@
 #### Api
 - Выполняет запросы к серверу.
 - Поля: `baseUrl: string`.
-- Методы: `getProducts()`, `createOrder(order: IOrderForm)`
+- Методы: `getProducts()`, `createOrder(order: IOrder)`
 
 ---
 
@@ -209,9 +209,6 @@
 ## Типы данных и интерфейсы
 
 ```typescript
-export type TPaymentMethod = 'online' | 'upon_receipt';
-export type TPrice = number | null;
-
 export interface IProduct {
   id: string;
   image: string;
@@ -240,6 +237,10 @@ export interface IUserData {
 export interface IOrderForm extends IUserData {
   payment: TPaymentMethod;
   totalPrice: TPrice;
+}
+
+export interface IOrder extends IOrderForm {
+  items: string[]
 }
 
 export interface IOrderSuccess {

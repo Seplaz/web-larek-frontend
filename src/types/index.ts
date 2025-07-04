@@ -1,5 +1,6 @@
 export type TPaymentMethod = 'online' | 'upon_receipt';
 export type TPrice = number | null;
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IProduct {
   id: string;
@@ -31,13 +32,17 @@ export interface IOrderForm extends IUserData {
   totalPrice: TPrice;
 }
 
+export interface IOrder extends IOrderForm {
+  items: string[]
+}
+
 export interface IOrderSuccess {
   totalPrice: TPrice;
 }
 
 export interface IApiClient {
   getProducts(): Promise<IProduct[]>;
-  createOrder(order: IOrderForm): Promise<IOrderSuccess>;
+  createOrder(order: IOrder): Promise<IOrderSuccess>;
 }
 
 export interface IPageView {
