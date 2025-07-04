@@ -1,7 +1,5 @@
 export type TPaymentMethod = 'online' | 'upon_receipt';
 export type TPrice = number | null;
-export type TApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-export type TEventName = string | RegExp;
 
 export interface IProduct {
   id: string;
@@ -37,16 +35,25 @@ export interface IOrderSuccess {
   totalPrice: TPrice;
 }
 
-export interface IApiResponse<T> {
-  baseUrl: string;
-  get<T>(uri: string, method?: TApiMethod): Promise<T>;
-  post<T>(uri: string, data: object, method?: TApiMethod): Promise<T>;
+export interface IApiClient {
+  getProducts(): Promise<IProduct[]>;
+  createOrder(order: IOrderForm): Promise<IOrderSuccess>;
+}
+
+export interface IPageView {
+  render(products: IProduct[]): void;
+  onBasketClick(callback: () => void): void;
+}
+
+export interface IProductCardView {
+  render(product: IProduct): void;
+  onClick(callback: () => void): void;
 }
 
 export enum Events {
   PRODUCTS_LOADED = 'products:loaded',
+  
   PRODUCT_SELECTED = 'product:selected',
-
   PRODUCT_ADDED_TO_BASKET = 'product:added_to_basket',
   PRODUCT_REMOVED_FROM_BASKET = 'product:removed_from_basket',
 
@@ -61,62 +68,4 @@ export enum Events {
 
   MODAL_OPENED = 'modal:opened',
   MODAL_CLOSED = 'modal:closed'
-}
-
-export interface IView {
-  render(data?: unknown): void;
-  show(): void;
-  hide(): void;
-}
-
-export interface IPageView extends IView {
-  renderProductList(products: IProduct[]): void;
-  onBasketOpen(callback: () => void): void;
-  renderBasketCounter(count: number): void;
-}
-
-export interface IProductCardView extends IView {
-  onSelect(callback: (id: string) => void): void;
-}
-
-export interface IProductModalView extends IView {
-  onBuy(callback: (id: string) => void): void;
-}
-
-export interface IBasketModalView extends IView {
-  onRemoveItem(callback: (id: string) => void): void;
-  onCheckout(callback: () => void): void;
-}
-
-export interface IBasketItemView extends IView {
-  onRemove(callback: () => void): void;
-}
-
-export interface IOrderDeliveryView extends IView {
-  onNext(callback: (data: { payment: TPaymentMethod; deliveryAddress: string }) => void): void;
-}
-
-export interface IOrderContactsView extends IView {
-  onSubmit(callback: (data: { email: string; phone: string }) => void): void;
-}
-
-export interface IOrderSuccessView extends IView {
-  render(totalPrice: TPrice): void;
-}
-
-export interface IPresenter {
-  init(): void;
-  destroy(): void;
-}
-
-export interface IProductPresenter extends IPresenter {}
-
-export interface IBasketPresenter extends IPresenter {}
-
-export interface IOrderPresenter extends IPresenter {}
-
-export interface IEventEmitter {
-  on<T extends object>(event: TEventName, callback: (data: T) => void): void;
-  emit<T extends object>(event: string, data?: T): void;
-  trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
 }
