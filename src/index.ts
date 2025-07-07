@@ -1,14 +1,15 @@
 import './scss/styles.scss';
+
+import { EventEmitter } from './components/base/events';
+import { Modal } from './components/Modal';
 import { ensureElement } from './utils/utils';
+import { Page } from './components/Page';
 
-const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
-const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const events = new EventEmitter();
 
-const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
-const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
+const page = new Page(ensureElement<HTMLElement>('.page'), events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
-const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
-const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
-const successTemplate = ensureElement<HTMLTemplateElement>('#success');
-
-const page = new PageView();
+events.on('modal:close', () => {
+  modal.close();
+});

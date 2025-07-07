@@ -4,20 +4,20 @@ export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IProduct {
   id: string;
-  image: string;
-  category: string;
-  title: string;
   description: string;
+  image: string;
+  title: string;
+  category: string;
   price: TPrice;
 }
 
 export interface IProductList {
-  products: IProduct[];
+  items: IProduct[];
 }
 
 export interface IBasket {
   index: number;
-  products: IProduct[];
+  items: IProduct[];
   totalPrice: TPrice;
 }
 
@@ -40,37 +40,25 @@ export interface IOrderSuccess {
   totalPrice: TPrice;
 }
 
-export interface IApiClient {
-  getProducts(): Promise<IProduct[]>;
-  createOrder(order: IOrder): Promise<IOrderSuccess>;
-}
-
-export interface IPageView {
-  render(products: IProduct[]): void;
-  onBasketClick(callback: () => void): void;
-}
-
-export interface IProductCardView {
-  render(product: IProduct): void;
-  onClick(callback: () => void): void;
-}
-
 export enum Events {
+  PAGE_LOADED = 'page:loaded',
+
+
   PRODUCTS_LOADED = 'products:loaded',
   
   PRODUCT_SELECTED = 'product:selected',
   PRODUCT_ADDED_TO_BASKET = 'product:added_to_basket',
   PRODUCT_REMOVED_FROM_BASKET = 'product:removed_from_basket',
 
-  BASKET_OPENED = 'basket:opened',
-  BASKET_UPDATED = 'basket:updated',
-  BASKET_CLOSED = 'basket:closed',
+  BASKET_OPENED = 'basket:open',
+  BASKET_UPDATED = 'basket:update',
+  BASKET_CLOSED = 'basket:close',
 
   ORDER_STEP_COMPLETED = 'order:step_completed',
   ORDER_SUBMITTED = 'order:submitted',
   ORDER_SUCCESS = 'order:success',
   ORDER_ERROR = 'order:error',
 
-  MODAL_OPENED = 'modal:opened',
-  MODAL_CLOSED = 'modal:closed'
+  MODAL_OPEN = 'modal:open',
+  MODAL_CLOSE = 'modal:close'
 }

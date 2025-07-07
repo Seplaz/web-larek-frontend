@@ -1,22 +1,44 @@
-export class Modal {
-  protected modal: HTMLElement;
-  protected closeBtn: HTMLElement;
+import { Component } from './base/Component';
+import { ensureElement } from '../utils/utils';
+import { IEvents } from './base/events';
 
-  constructor(modalSelector: string, closeSelector: string) {
-    this.modal = document.querySelector(modalSelector) as HTMLElement;
-    this.closeBtn = this.modal.querySelector(closeSelector) as HTMLElement;
-    this.closeBtn.addEventListener('click', () => this.close());
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) this.close();
-    });
-  }
+interface IModalData {
+    content: HTMLElement;
+}
 
-  open(content: HTMLElement) {
-    this.modal.querySelector('.modal-content')?.replaceWith(content);
-    this.modal.classList.add('open');
-  }
+export class Modal extends Component<IModalData> {
+    protected _closeButton: HTMLButtonElement;
+    protected _content: HTMLElement;
 
-  close() {
-    this.modal.classList.remove('open');
-  }
+    constructor(container: HTMLElement, protected events: IEvents) {
+        super(container);
+
+        this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
+        this._content = ensureElement<HTMLElement>('.modal__content', container);
+
+        this._closeButton.addEventListener('click', this.close.bind(this));
+        this.container.addEventListener('click', this.close.bind(this));
+        this._content.addEventListener('click', (event) => event.stopPropagation());
+    }
+
+    set content(value: HTMLElement) {
+        this._content.replaceChildren(value);
+    }
+
+    open() {
+        this.container.classList.add('modal_active');
+        this.events.emit('modal:open');
+    }
+
+    close() {
+        this.container.classList.remove('modal_active');
+        this.content = null;
+        this.events.emit('modal:close');
+    }
+
+    render(data: IModalData): HTMLElement {
+        super.render(data);
+        this.open();
+        return this.container;
+    }
 }
