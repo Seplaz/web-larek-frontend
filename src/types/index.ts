@@ -2,6 +2,12 @@ export type TPaymentMethod = 'online' | 'upon_receipt';
 export type TPrice = number | null;
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
+export interface IPage {
+  counter: number;
+  catalog: HTMLElement[];
+  locked: boolean;
+}
+
 export interface IProduct {
   id: string;
   description: string;
@@ -12,6 +18,7 @@ export interface IProduct {
 }
 
 export interface IProductList {
+  total: number;
   items: IProduct[];
 }
 
@@ -19,6 +26,12 @@ export interface IBasket {
   index: number;
   items: IProduct[];
   totalPrice: TPrice;
+}
+
+export interface IBasketView {
+  items: HTMLElement[];
+  total: number;
+  selected: string[];
 }
 
 export interface IUserData {
@@ -40,22 +53,24 @@ export interface IOrderSuccess {
   totalPrice: TPrice;
 }
 
+export interface IStoreAPI {
+  getItemsList: () => Promise<IProductList>;
+  getItem: (id: string) => Promise<IProduct>;
+  sendOrder: (order: IOrder) => Promise<IOrderSuccess>;
+}
+
 export enum Events {
-  PAGE_LOADED = 'page:loaded',
-
-
   PRODUCTS_LOADED = 'products:loaded',
-  
   PRODUCT_SELECTED = 'product:selected',
   PRODUCT_ADDED_TO_BASKET = 'product:added_to_basket',
   PRODUCT_REMOVED_FROM_BASKET = 'product:removed_from_basket',
 
-  BASKET_OPENED = 'basket:open',
-  BASKET_UPDATED = 'basket:update',
-  BASKET_CLOSED = 'basket:close',
+  BASKET_OPEN = 'basket:open',
+  BASKET_UPDATE = 'basket:update',
+  BASKET_CLOSE = 'basket:close',
 
-  ORDER_STEP_COMPLETED = 'order:step_completed',
-  ORDER_SUBMITTED = 'order:submitted',
+  ORDER_STEP_COMPLETE = 'order:step_complete',
+  ORDER_SUBMIT = 'order:submit',
   ORDER_SUCCESS = 'order:success',
   ORDER_ERROR = 'order:error',
 
