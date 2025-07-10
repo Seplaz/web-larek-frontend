@@ -1,6 +1,7 @@
-import { IProduct } from "../types";
+import { IProduct, TPrice } from "../types";
 import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
+import { IEvents } from "./base/events";
 
 export class Product extends Component<IProduct> {
   protected _category: HTMLElement;
@@ -9,16 +10,18 @@ export class Product extends Component<IProduct> {
   protected _price: HTMLElement;
   protected _button: HTMLButtonElement;
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, protected events: IEvents) {
     super(container);
 
     this._category = ensureElement('.card__category', this.container) as HTMLElement;
     this._title = ensureElement('.card__title', this.container) as HTMLElement;
     this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
     this._price = ensureElement('.card__price', this.container) as HTMLElement;
-    // this.button = ensureElement('.gallery__item', this.container) as HTMLButtonElement;
+    this._button = ensureElement('.card', this.container) as HTMLButtonElement;
 
-
+    this._button.addEventListener('click', () => {
+      this.events.emit('product:added');
+    });
   }
 
   set category(value: string) {
@@ -33,14 +36,12 @@ export class Product extends Component<IProduct> {
     this.setImage(this._image, value, `Изображение товара: ${this._title.textContent}` || "Изображение товара");
   }
 
-  set price(value: string) {
+  set price(value: TPrice) {
+    if(value === null) {
+      this.setText(this._price, 'Бесценно')
+    }
     this.setText(this._price, `${value} синапсов`);
   }
-
-  // render(data: Partial<IProduct>): HTMLElement {
-  //   Object.assign(this as object, data);
-  //   return this.container;
-  // }
 
   // добавить кнопку добавления продукта в корзину
 

@@ -28,13 +28,13 @@ events.onAll(({ eventName, data }) => {
 
 
   const gallery = ensureElement<HTMLElement>('.gallery');
-  const card = new Product(cloneTemplate(cardCatalogTemplate))
+  const card = new Product(cloneTemplate(cardCatalogTemplate), events)
 
   api.getItems()
   .then(data => {
     productModel.setItems(data.items);
     productModel.getItems().forEach((item: IProduct) => {
-      const card = new Product(cloneTemplate(cardCatalogTemplate));
+      const card = new Product(cloneTemplate(cardCatalogTemplate), events);
       card.title = item.title;
       card.image = item.image;
       gallery.append(card.render(item));
