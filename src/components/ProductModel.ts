@@ -1,32 +1,33 @@
 import { IProduct } from "../types";
-import { Api, ApiListResponse } from "./base/api";
-import { EventEmitter } from "./base/events";
 
 export class ProductModel {
-  constructor(protected api: Api, protected events: EventEmitter) {
-    this.api = api;
-    this.events = events;
+  protected items: IProduct[] = [];
+
+  constructor() {
+    //
   }
 
-  async getItems(): Promise<IProduct[]> {
-    try {
-      const response = await this.api.get('/product');
-      return (response as ApiListResponse<IProduct>).items;
-    }
-
-    catch(error) {
-      console.error(`Ошибка запроса: ${error}`);
-    }
+  addItem(item: IProduct) {
+    this.items.push(item);
   }
 
-  async getItem(id: string): Promise<IProduct> {
-    try {
-      const response = await this.api.get(`/product/${id}`);
-      return response as IProduct;
-    }
+  removeItem(id: string) {
+    this.items = this.items.filter(item => item.id !== id);
+  }
 
-    catch(error) {
-      console.error(`Ошибка запроса, товара с идентификатором ${id}. ${error}`)
-    }
+  getItems(): IProduct[] {
+    return this.items;
+  }
+
+  setItems(items: IProduct[]) {
+    this.items = items;
+  }
+  
+  getItem(id: string): IProduct {
+    return this.items.find(item => item.id === id);
+  }
+
+  getTotal() {
+    return this.items.length;
   }
 }

@@ -2,12 +2,6 @@ export type TPaymentMethod = 'online' | 'upon_receipt';
 export type TPrice = number | null;
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
-export interface IPage {
-  counter: number;
-  catalog: HTMLElement[];
-  locked: boolean;
-}
-
 export interface IProduct {
   id: string;
   description: string;
@@ -25,13 +19,7 @@ export interface IProductList {
 export interface IBasket {
   index: number;
   items: IProduct[];
-  totalPrice: TPrice;
-}
-
-export interface IBasketView {
-  items: HTMLElement[];
-  total: number;
-  selected: string[];
+  total: TPrice;
 }
 
 export interface IUserData {
@@ -42,7 +30,7 @@ export interface IUserData {
 
 export interface IOrderForm extends IUserData {
   payment: TPaymentMethod;
-  totalPrice: TPrice;
+  total: TPrice;
 }
 
 export interface IOrder extends IOrderForm {
@@ -50,7 +38,8 @@ export interface IOrder extends IOrderForm {
 }
 
 export interface IOrderSuccess {
-  totalPrice: TPrice;
+  id: string;
+  total: TPrice;
 }
 
 export interface IStoreAPI {
