@@ -24,7 +24,8 @@ const config = {
     open: true,
     host: "localhost",
     watchFiles: ["src/pages/*.html"],
-    hot: true
+    hot: true,
+    port: 8081
   },
   plugins: [
     new HtmlWebpackPlugin({

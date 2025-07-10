@@ -22,6 +22,12 @@ export interface IBasket {
   total: TPrice;
 }
 
+export interface IBasketView {
+  items: HTMLElement[];
+  total: number;
+  selected: string[];
+}
+
 export interface IUserData {
   deliveryAddress: string;
   email: string;
@@ -42,24 +48,29 @@ export interface IOrderSuccess {
   total: TPrice;
 }
 
+export interface ICardActions {
+  onClick: (event: MouseEvent) => void;
+}
+
 export interface IStoreAPI {
-  getItemsList: () => Promise<IProductList>;
-  getItem: (id: string) => Promise<IProduct>;
-  sendOrder: (order: IOrder) => Promise<IOrderSuccess>;
+  getItems(): Promise<IProductList>
+  getItem(): Promise<IProduct>
+  sendOrder(order: IOrder): Promise<IOrderSuccess>
 }
 
 export enum Events {
   PRODUCTS_LOADED = 'products:loaded',
+  
   PRODUCT_SELECTED = 'product:selected',
-  PRODUCT_ADDED_TO_BASKET = 'product:added_to_basket',
-  PRODUCT_REMOVED_FROM_BASKET = 'product:removed_from_basket',
+  PRODUCT_ADDED = 'product:added',
+  PRODUCT_REMOVED = 'product:removed',
 
   BASKET_OPEN = 'basket:open',
   BASKET_UPDATE = 'basket:update',
   BASKET_CLOSE = 'basket:close',
 
-  ORDER_STEP_COMPLETE = 'order:step_complete',
-  ORDER_SUBMIT = 'order:submit',
+  ORDER_STEP_COMPLETE = 'order:step_completed',
+  ORDER_SUBMIT = 'order:submitted',
   ORDER_SUCCESS = 'order:success',
   ORDER_ERROR = 'order:error',
 

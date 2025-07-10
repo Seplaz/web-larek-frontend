@@ -3,9 +3,9 @@ import { IProduct } from "../types";
 export class ProductModel {
   protected items: IProduct[] = [];
 
-  constructor() {
-    //
-  }
+  // constructor() {
+  // 
+  // }
 
   addItem(item: IProduct) {
     this.items.push(item);
