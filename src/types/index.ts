@@ -75,7 +75,7 @@ export enum Events {
   BASKET_UPDATE = 'basket:update',
   BASKET_CLOSE = 'basket:close',
 
-  ORDER_STEP_COMPLETE = 'order:step_completed',
+  ORDER_STEP_NEXT = 'order:step_next',
   ORDER_SUBMIT = 'order:submitted',
   ORDER_SUCCESS = 'order:success',
   ORDER_ERROR = 'order:error',
