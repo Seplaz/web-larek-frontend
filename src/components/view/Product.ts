@@ -1,7 +1,7 @@
-import { IProduct, TPrice } from "../types";
-import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
-import { IEvents } from "./base/events";
+import { IProduct, TPrice } from "../../types";
+import { ensureElement } from "../../utils/utils";
+import { Component } from "../base/component";
+import { IEvents } from "../base/events";
 
 export class Product extends Component<IProduct> {
   protected _category: HTMLElement;
@@ -17,11 +17,6 @@ export class Product extends Component<IProduct> {
     this._title = ensureElement('.card__title', this.container) as HTMLElement;
     this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
     this._price = ensureElement('.card__price', this.container) as HTMLElement;
-    this._button = ensureElement('.card', this.container) as HTMLButtonElement;
-
-    this._button.addEventListener('click', () => {
-      this.events.emit('product:added');
-    });
   }
 
   set category(value: string) {

@@ -48,6 +48,12 @@ export interface IOrderSuccess {
   total: TPrice;
 }
 
+export interface IPage {
+  counter: number;
+  catalog: HTMLElement[];
+  locked: boolean;
+}
+
 export interface ICardActions {
   onClick: (event: MouseEvent) => void;
 }
@@ -61,9 +67,9 @@ export interface IStoreAPI {
 export enum Events {
   PRODUCTS_LOADED = 'products:loaded',
   
-  PRODUCT_SELECTED = 'product:selected',
-  PRODUCT_ADDED = 'product:added',
-  PRODUCT_REMOVED = 'product:removed',
+  PRODUCT_SELECT = 'product:select',
+  PRODUCT_ADD = 'product:add',
+  PRODUCT_REMOVE = 'product:remove',
 
   BASKET_OPEN = 'basket:open',
   BASKET_UPDATE = 'basket:update',
