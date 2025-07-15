@@ -17,9 +17,15 @@ export interface IProductList {
 }
 
 export interface IBasket {
+  items: IBasketItem[];
+  amount: number;
+}
+
+export interface IBasketItem {
+  id: string;
   index: number;
-  items: IProduct[];
-  total: TPrice;
+  title: string;
+  price: TPrice;
 }
 
 export interface IBasketView {
@@ -82,4 +88,12 @@ export enum Events {
 
   MODAL_OPEN = 'modal:open',
   MODAL_CLOSE = 'modal:close'
+}
+
+export enum Category {
+  'софт-скил' = 'card__category_soft',
+  'другое' = 'card__category_other',
+  'дополнительное' = 'card__category_additional',
+  'кнопка' = 'card__category_button',
+  'хард-скил' = 'card__category_hard'
 }
