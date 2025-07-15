@@ -58,11 +58,15 @@ events.on('product:add', (data: { card: IProduct }) => {
 
 events.on('basket:changed', (basketItems: IProduct[]) => {
   basket.items = basketItems.map((item, index) => {
-    const basketItem = new BasketItem(cardBasketTemplate, item, index);
+    const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), events);
+    basketItem.index = index + 1;
+    basketItem.title = item.title;
+    basketItem.price = item.price;
     return basketItem.render();
   });
   page.counter = basketItems.length;
   basket.total = basketModel.getTotal();
+  modal.close();
 });
 
 

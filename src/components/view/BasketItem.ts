@@ -1,25 +1,30 @@
-import { IProduct } from "../../types";
+import { IProduct, TPrice } from "../../types";
 import { EventEmitter } from "../base/events";
-import { cloneTemplate } from "../../utils/utils";
+import { Component } from "../base/component";
+import { ensureElement } from "../../utils/utils";
 
-export class BasketItem {
-  protected _container: HTMLElement;
+export class BasketItem extends Component<IProduct> {
   protected _index: HTMLElement;
   protected _title: HTMLElement;
   protected _price: HTMLElement;
 
-  constructor(template: HTMLTemplateElement, item: IProduct, index: number) {
-    this._container = cloneTemplate(template);
-    this._index = this._container.querySelector('.basket__item-index');
-    this._title = this._container.querySelector('.card__title');
-    this._price = this._container.querySelector('.card__price');
+  constructor(container: HTMLElement, protected events: EventEmitter) {
+    super(container);
 
-    this._index.textContent = String(index + 1);
-    this._title.textContent = item.title;
-    this._price.textContent = item.price === null ? 'Бесценно' : `${item.price} синапсов`;
+    this._index = ensureElement('.basket__item-index', this.container) as HTMLElement;
+    this._title = ensureElement('.card__title', this.container) as HTMLElement;
+    this._price = ensureElement('.card__price', this.container) as HTMLElement;
   }
 
-  render(): HTMLElement {
-    return this._container;
+  set index(value: number) {
+    this.setText(this._index, value);
+  }
+
+  set title(value: string) {
+    this.setText(this._title, value);
+  }
+
+  set price(value: TPrice) {
+    this.setText(this._price, value === null ? 'Бесценно' : `${value} синапсов`);
   }
 }
