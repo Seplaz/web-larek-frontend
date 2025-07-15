@@ -6,7 +6,9 @@ import { API_URL, CDN_URL } from './utils/constants';
 import { Modal } from './components/Modal';
 import { cloneTemplate, createElement, ensureElement } from './utils/utils';
 import { Basket } from './components/view/Basket';
+import { BasketItem } from './components/view/BasketItem';
 import { ProductModel } from './components/model/ProductModel';
+import { BasketModel } from './components/model/BasketModel';
 import { Card } from './components/view/Card';
 import { Page } from './components/Page';
 import { IProduct } from './types';
@@ -31,6 +33,7 @@ const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const productModel = new ProductModel(events);
+const basketModel = new BasketModel(events);
 
 api.getItems()
 	.then(data => {
@@ -50,15 +53,16 @@ events.on('product:select', (data: { card: IProduct }) => {
 
 
 events.on('product:add', (data: { card: IProduct }) => {
-  basket.addItem(data.card);
-  basket.items = basket.itemsList.map((item, index) => {
-    const basketItem = cloneTemplate(cardBasketTemplate);
-    basketItem.querySelector('.basket__item-index').textContent = String(index + 1);
-    basketItem.querySelector('.card__title').textContent = item.title;
-    return basketItem;
-  });
+  basketModel.add(data.card);
+});
 
-  page.counter = basket.itemsList.length;
+events.on('basket:changed', (basketItems: IProduct[]) => {
+  basket.items = basketItems.map((item, index) => {
+    const basketItem = new BasketItem(cardBasketTemplate, item, index);
+    return basketItem.render();
+  });
+  page.counter = basketItems.length;
+  basket.total = basketModel.getTotal();
 });
 
 

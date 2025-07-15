@@ -46,14 +46,4 @@ export class Basket extends Component<IBasketView> {
     set total(total: number) {
         this.setText(this._total, formatNumber(total));
     }
-
-    addItem(item: IProduct) {
-        if (!this._items.find(i => i.id === item.id)) {
-            this._items.push(item);
-        }
-    }
-
-    get itemsList() {
-        return this._items;
-    }
 }

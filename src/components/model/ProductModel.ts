@@ -3,7 +3,8 @@ import { EventEmitter } from "../base/events";
 
 export class ProductModel {
   protected items: IProduct[] = [];
-
+  protected basket: IProduct[] = [];
+  
   constructor(protected events: EventEmitter) {
 
   }
@@ -16,8 +17,15 @@ export class ProductModel {
     this.items = items;
     this.events.emit('products:loaded');
   }
+  
+  addToBasket(product: IProduct) {
+    if (!this.basket.find(item => item.id === product.id)) {
+      this.basket.push(product);
+      this.events.emit('basket:changed', this.basket);
+    }
+  }
 
-  getItem(id: string): IProduct {
-    return this.items.find(item => item.id === id);
+  getBasket(): IProduct[] {
+    return this.basket;
   }
 }
