@@ -1,6 +1,6 @@
-export type TPaymentMethod = 'online' | 'upon_receipt';
+export type TPaymentMethod = 'card' | 'cash';
 export type TPrice = number | null;
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
+export type TFormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IProduct {
   id: string;
@@ -34,15 +34,11 @@ export interface IBasketView {
   selected: string[];
 }
 
-export interface IUserData {
-  deliveryAddress: string;
-  email: string;
-  phone: string;
-}
-
-export interface IOrderForm extends IUserData {
-  payment: TPaymentMethod;
-  total: TPrice;
+export interface IOrderForm {
+  email?: string;
+  phone?: string;
+  address?: string;
+  payment?: TPaymentMethod;
 }
 
 export interface IOrder extends IOrderForm {
@@ -52,6 +48,11 @@ export interface IOrder extends IOrderForm {
 export interface IOrderSuccess {
   id: string;
   total: TPrice;
+}
+
+export interface IFormState {
+  valid: boolean;
+  errors: string[];
 }
 
 export interface IPage {
@@ -70,9 +71,17 @@ export interface IStoreAPI {
   sendOrder(order: IOrder): Promise<IOrderSuccess>
 }
 
+export interface IAppState {
+  catalog: IProduct[];
+  basket: string[];
+  preview: string | null;
+  order: IOrder | null;
+  loading: boolean;
+}
+
 export enum Events {
   PRODUCTS_LOADED = 'products:loaded',
-  
+
   PRODUCT_SELECT = 'product:select',
   PRODUCT_ADD = 'product:add',
   PRODUCT_REMOVE = 'product:remove',
@@ -81,10 +90,14 @@ export enum Events {
   BASKET_UPDATE = 'basket:update',
   BASKET_CLOSE = 'basket:close',
 
-  ORDER_STEP_NEXT = 'order:step_next',
-  ORDER_SUBMIT = 'order:submitted',
+  ORDER_STEP_ADDRESS = 'order:step_address',
+  ORDER_STEP_CONTACTS = 'order:step_contacts',
+  ORDER_SUBMIT = 'order:submit',
   ORDER_SUCCESS = 'order:success',
   ORDER_ERROR = 'order:error',
+
+  FORM_ERRORS = 'formErrors:change',
+  ORDER_OPEN = 'order:open',
 
   MODAL_OPEN = 'modal:open',
   MODAL_CLOSE = 'modal:close'

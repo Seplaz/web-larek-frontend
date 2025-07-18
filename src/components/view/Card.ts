@@ -37,8 +37,10 @@ export class Card extends Component<IProduct> {
         event.stopPropagation();
         if (this._cartButton.textContent === 'В корзину') {
           this.events.emit('product:add', { card: this._data });
+          this.inBasket = true;
         } else if (this._cartButton.textContent === 'Удалить из корзины') {
           this.events.emit('product:remove', { card: this._data });
+          this.inBasket = false;
         }
       });
     }
@@ -78,6 +80,18 @@ export class Card extends Component<IProduct> {
     if (this._cartButton) {
       this._cartButton.textContent = value === null ? 'Недоступно' : 'В корзину';
       this._cartButton.disabled = value === null;
+    }
+  }
+
+  set inBasket(value: boolean) {
+    if (this._cartButton) {
+      if (value) {
+        this._cartButton.textContent = 'Удалить из корзины';
+        this._cartButton.disabled = false;
+      } else {
+        this._cartButton.textContent = this._data?.price === null ? 'Недоступно' : 'В корзину';
+        this._cartButton.disabled = this._data?.price === null;
+      }
     }
   }
 

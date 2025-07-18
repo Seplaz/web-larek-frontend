@@ -13,9 +13,11 @@ export class BasketModel {
     }
   }
 
-  remove(id: string) {
-    this.items = this.items.filter(i => i.id !== id);
-    this.events.emit('basket:changed', this.items);
+  remove(item: IProduct) {
+    if (this.items.find(i => i.id === item.id)) {
+      this.items = this.items.filter(i => i.id !== item.id);
+      this.events.emit('basket:changed', this.items);
+    }
   }
 
   getItems(): IProduct[] {
