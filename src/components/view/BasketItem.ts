@@ -19,7 +19,7 @@ export class BasketItem extends Component<IProduct> {
     this._deleteButton = ensureElement('.basket__item-delete', this.container) as HTMLButtonElement;
 
     if (this._deleteButton) {
-      this._deleteButton.addEventListener('click', (event) => {
+      this._deleteButton.addEventListener('click', (event: Event) => {
         event.preventDefault();
         event.stopPropagation();
         this.events.emit('product:remove', { card: { id: this.id } });

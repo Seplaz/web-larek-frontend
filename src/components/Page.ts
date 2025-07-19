@@ -1,5 +1,5 @@
 import { Component } from "./base/component";
-import { IEvents } from "./base/events";
+import { EventEmitter } from "./base/events";
 import { ensureElement } from "../utils/utils";
 import { IPage } from "../types";
 
@@ -10,7 +10,7 @@ export class Page extends Component<IPage> {
     protected _basket: HTMLElement;
 
 
-    constructor(container: HTMLElement, protected events: IEvents) {
+    constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
 
         this._counter = ensureElement<HTMLElement>('.header__basket-counter');

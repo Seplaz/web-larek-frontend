@@ -1,6 +1,6 @@
 export type TPaymentMethod = 'card' | 'cash';
 export type TPrice = number | null;
-export type TFormErrors = Partial<Record<keyof IOrder, string>>;
+export type TFormErrors = Partial<Record<keyof IOrder, string>> & { common?: string };
 
 export interface IProduct {
   id: string;
@@ -11,21 +11,9 @@ export interface IProduct {
   price: TPrice;
 }
 
-export interface IProductList {
-  total: number;
+export interface IProductListResponse {
   items: IProduct[];
-}
-
-export interface IBasket {
-  items: IBasketItem[];
-  amount: number;
-}
-
-export interface IBasketItem {
-  id: string;
-  index: number;
-  title: string;
-  price: TPrice;
+  total?: number;
 }
 
 export interface IBasketView {
@@ -42,7 +30,7 @@ export interface IOrderForm {
 }
 
 export interface IOrder extends IOrderForm {
-  items: string[]
+  items: string[];
 }
 
 export interface IOrderSuccess {
@@ -61,16 +49,6 @@ export interface IPage {
   locked: boolean;
 }
 
-export interface ICardActions {
-  onClick: (event: MouseEvent) => void;
-}
-
-export interface IStoreAPI {
-  getItems(): Promise<IProductList>
-  getItem(): Promise<IProduct>
-  sendOrder(order: IOrder): Promise<IOrderSuccess>
-}
-
 export interface IAppState {
   catalog: IProduct[];
   basket: string[];
@@ -81,26 +59,21 @@ export interface IAppState {
 
 export enum Events {
   PRODUCTS_LOADED = 'products:loaded',
-
   PRODUCT_SELECT = 'product:select',
   PRODUCT_ADD = 'product:add',
   PRODUCT_REMOVE = 'product:remove',
 
   BASKET_OPEN = 'basket:open',
-  BASKET_UPDATE = 'basket:update',
-  BASKET_CLOSE = 'basket:close',
+  BASKET_CHANGED = 'basket:changed',
 
   ORDER_STEP_ADDRESS = 'order:step_address',
   ORDER_STEP_CONTACTS = 'order:step_contacts',
-  ORDER_SUBMIT = 'order:submit',
   ORDER_SUCCESS = 'order:success',
-  ORDER_ERROR = 'order:error',
 
-  FORM_ERRORS = 'formErrors:change',
-  ORDER_OPEN = 'order:open',
+  FORM_ERRORS_CHANGE = 'formErrors:change',
 
   MODAL_OPEN = 'modal:open',
-  MODAL_CLOSE = 'modal:close'
+  MODAL_CLOSE = 'modal:close',
 }
 
 export enum Category {

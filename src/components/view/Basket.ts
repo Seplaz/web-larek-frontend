@@ -1,7 +1,7 @@
 import { Component } from "../base/component";
 import { createElement, ensureElement, formatNumber } from "../../utils/utils";
 import { EventEmitter } from "../base/events";
-import { IBasketView, IProduct } from "../../types";
+import { IBasketView, IProduct, TPrice } from "../../types";
 
 export class Basket extends Component<IBasketView> {
     protected _list: HTMLElement;
@@ -45,7 +45,7 @@ export class Basket extends Component<IBasketView> {
         }
     }
 
-    set total(total: number) {
+    set total(total: TPrice) {
         this.setText(this._total, formatNumber(total));
     }
 }

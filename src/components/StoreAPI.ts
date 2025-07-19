@@ -1,4 +1,4 @@
-import { IOrder, IOrderSuccess, IProduct, IProductList } from "../types";
+import { IOrderSuccess } from "../types";
 import { Api } from "./base/api";
 
 export class StoreAPI extends Api {
@@ -10,17 +10,17 @@ export class StoreAPI extends Api {
     super(baseUrl, options);
   }
 
-  async getItems(): Promise<IProductList> {
-    const data = await this.get<IProductList>('/product');
-    return { ...data, items: data.items.map(item => ({ ...item, image: this.cdn + item.image })) };
+  async getItems() {
+    const data = await this.get<any>("/product");
+    return { ...data, items: data.items.map((item: any) => ({ ...item, image: this.cdn + item.image })) };
   }
 
-  async getItem(id: string): Promise<IProduct> {
-    const item = await this.get<IProduct>(`/product/${id}`);
+  async getItem(id: string) {
+    const item = await this.get<any>(`/product/${id}`);
     return { ...item, image: this.cdn + item.image };
   }
 
-  async sendOrder(order: IOrder): Promise<IOrderSuccess> {
+  async sendOrder(order: any): Promise<IOrderSuccess> {
     return this.post('/order', order);
   }
 }

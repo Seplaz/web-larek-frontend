@@ -9,7 +9,7 @@ import { Basket } from './components/view/Basket';
 import { BasketItem } from './components/view/BasketItem';
 import { Card } from './components/view/Card';
 import { Page } from './components/Page';
-import { IProduct } from './types';
+import { IOrderForm, IProduct } from './types';
 import { AppState } from './components/AppState';
 import { Order } from './components/Order'
 import { Contacts } from './components/view/Contacts';
@@ -80,31 +80,46 @@ events.on('basket:changed', (basketItems: IProduct[]) => {
 	});
 	page.counter = basketItems.length;
 	basket.total = basketItems.reduce((sum, item) => sum + (item.price || 0), 0);
-	// modal.close();
 });
 
 events.on('basket:open', () => {
 	modal.render({ content: basket.render() });
 });
 
-events.on('order:submit', () => {
-	api.sendOrder(appState.order)
-			.then((result) => {
-					const success = new Success(cloneTemplate(successTemplate), {
-							onClick: () => {
-									modal.close();
-									appState.clearBasket();
-									events.emit('basket:changed');
-							}
-					}, events);
 
-					modal.render({
-							content: success.render({})
-					});
-			})
-			.catch(err => {
-					console.error(err);
-			});
+events.on('order:success', () => {
+  appState.setOrderItems();
+  const orderToSend = appState.getOrderToSend();
+  api.sendOrder(orderToSend)
+    .then((result) => {
+      const success = new Success(cloneTemplate(successTemplate), {
+        onClick: () => {
+          modal.close();
+          appState.clearBasket();
+          events.emit('basket:changed', []);
+        }
+      }, events);
+      modal.render({
+        content: success.render({ total: orderToSend.total })
+      });
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});
+
+events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
+	const orderErrors = { address: errors.address, payment: errors.payment };
+	order.valid = !orderErrors.address && !orderErrors.payment;
+	order.errors = Object.values(orderErrors).filter(i => !!i).join('; ');
+
+	const contactsErrors = { email: errors.email, phone: errors.phone };
+	contacts.valid = !contactsErrors.email && !contactsErrors.phone;
+	contacts.errors = Object.values(contactsErrors).filter(i => !!i).join('; ');
+});
+
+events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
+	appState.setOrderField(data.field, data.value);
 });
 
 events.on('order:step_address', () => {
@@ -122,4 +137,3 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
 	page.locked = false;
 });
-

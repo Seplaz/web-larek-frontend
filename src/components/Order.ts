@@ -1,7 +1,8 @@
 import { Form } from "./Form";
-import { IOrderForm } from "../types";
+import { IOrderForm, TFormErrors } from "../types";
 import { EventEmitter } from "./base/events";
 import { ensureElement } from "../utils/utils";
+import { AppState } from "./AppState";
 
 export class Order extends Form<IOrderForm> {
   protected _cardPaymentButton: HTMLButtonElement;
@@ -9,6 +10,7 @@ export class Order extends Form<IOrderForm> {
   protected _submit: HTMLButtonElement;
   protected _address: HTMLInputElement;
   protected _errors: HTMLElement;
+  protected _appState: AppState;
 
   constructor(container: HTMLFormElement, events: EventEmitter) {
     super(container, events);
@@ -19,19 +21,33 @@ export class Order extends Form<IOrderForm> {
     this._address = this.container.elements.namedItem('address') as HTMLInputElement;
     this._errors = ensureElement<HTMLElement>('.form__errors', this.container);
 
+    this._address.addEventListener('input', () => {
+      events.emit('order.address:change', { field: 'address', value: this._address.value });
+    });
+
     this._cardPaymentButton.addEventListener('click', () => {
       this.payment = 'card';
-
+      events.emit('order.payment:change', { field: 'payment', value: 'card' });
     });
 
     this._cashPaymentButton.addEventListener('click', () => {
       this.payment = 'cash';
+      events.emit('order.payment:change', { field: 'payment', value: 'cash' });
     });
 
-    this._submit.addEventListener('click', (event) => {
+    this._submit.addEventListener('click', (event: Event) => {
       event.preventDefault();
       if (!this._submit.disabled) {
         events.emit('order:step_contacts');
+      }
+    });
+
+    events.on('formErrors:change', (errors: TFormErrors) => {
+      if (this._errors) {
+        this._errors.textContent =
+          errors.payment ||
+          errors.address ||
+          '';
       }
     });
   }

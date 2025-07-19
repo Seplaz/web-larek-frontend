@@ -1,6 +1,6 @@
 import { Component } from "./base/component";
 import { ensureElement } from "../utils/utils";
-import { IEvents } from "./base/events";
+import { EventEmitter } from "./base/events";
 
 interface IModalData {
     content: HTMLElement;
@@ -10,7 +10,7 @@ export class Modal extends Component<IModalData> {
     protected _closeButton: HTMLButtonElement;
     protected _content: HTMLElement;
 
-    constructor(container: HTMLElement, protected events: IEvents) {
+    constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
 
         this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
@@ -18,7 +18,7 @@ export class Modal extends Component<IModalData> {
 
         this._closeButton.addEventListener('click', this.close.bind(this));
         this.container.addEventListener('click', this.close.bind(this));
-        this._content.addEventListener('click', (event) => event.stopPropagation());
+        this._content.addEventListener('click', (event: Event) => event.stopPropagation());
     }
 
     set content(value: HTMLElement) {

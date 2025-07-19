@@ -26,13 +26,13 @@ export class Card extends Component<IProduct> {
     this._button = this.container as HTMLButtonElement;
     this._cartButton = this.container.querySelector('.card__button') as HTMLButtonElement;
 
-    this._button.addEventListener('click', (event) => {
+    this._button.addEventListener('click', (event: Event) => {
       event.stopPropagation();
       this.events.emit('product:select', { card: this._data });
     });
 
     if (this._cartButton) {
-      this._cartButton.addEventListener('click', (event) => {
+      this._cartButton.addEventListener('click', (event: Event) => {
         event.preventDefault();
         event.stopPropagation();
         if (this._cartButton.textContent === 'В корзину') {
