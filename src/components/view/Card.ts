@@ -13,7 +13,6 @@ export class Card extends Component<IProduct> {
   protected _price: HTMLElement;
   protected _button: HTMLButtonElement;
   protected _cartButton: HTMLButtonElement;
-  private _data: IProduct;
 
   constructor(container: HTMLElement, protected events: EventEmitter) {
     super(container);
@@ -28,7 +27,7 @@ export class Card extends Component<IProduct> {
 
     this._button.addEventListener('click', (event: Event) => {
       event.stopPropagation();
-      this.events.emit('product:select', { card: this._data });
+      this.events.emit('product:select', { id: this._id });
     });
 
     if (this._cartButton) {
@@ -36,10 +35,10 @@ export class Card extends Component<IProduct> {
         event.preventDefault();
         event.stopPropagation();
         if (this._cartButton.textContent === 'В корзину') {
-          this.events.emit('product:add', { card: this._data });
+          this.events.emit('product:add', { id: this._id });
           this.inBasket = true;
         } else if (this._cartButton.textContent === 'Удалить из корзины') {
-          this.events.emit('product:remove', { card: this._data });
+          this.events.emit('product:remove', { id: this._id });
           this.inBasket = false;
         }
       });
@@ -89,16 +88,21 @@ export class Card extends Component<IProduct> {
         this._cartButton.textContent = 'Удалить из корзины';
         this._cartButton.disabled = false;
       } else {
-        this._cartButton.textContent = this._data?.price === null ? 'Недоступно' : 'В корзину';
-        this._cartButton.disabled = this._data?.price === null;
+        this._cartButton.textContent = 'В корзину';
+        this._cartButton.disabled = false;
       }
     }
   }
 
   render(data?: Partial<IProduct>): HTMLElement {
     if (data) {
-      this._data = { ...this._data, ...data } as IProduct;
+      if (data.id) this._id = data.id;
+      if (data.description !== undefined) this.description = data.description;
+      if (data.category !== undefined) this.category = data.category;
+      if (data.title !== undefined) this.title = data.title;
+      if (data.image !== undefined) this.image = data.image;
+      if (data.price !== undefined) this.price = data.price;
     }
-    return super.render(data);
+    return this.container;
   }
 }

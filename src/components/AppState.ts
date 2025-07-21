@@ -79,7 +79,6 @@ export class AppState implements IAppState {
   getOrderToSend() {
     const basketItems = this.getBasketItems();
     return {
-      id: basketItems[0]?.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : String(Date.now())),
       total: basketItems.reduce((sum, item) => sum + (item.price || 0), 0),
       payment: this.order.payment,
       email: this.order.email,

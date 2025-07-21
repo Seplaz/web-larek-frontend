@@ -3,17 +3,17 @@ import './scss/styles.scss';
 import { EventEmitter } from './components/base/events';
 import { StoreAPI } from './components/StoreAPI';
 import { API_URL, CDN_URL } from './utils/constants';
-import { Modal } from './components/Modal';
+import { Modal } from './components/view/Modal';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Basket } from './components/view/Basket';
 import { BasketItem } from './components/view/BasketItem';
 import { Card } from './components/view/Card';
-import { Page } from './components/Page';
+import { Page } from './components/view/Page';
 import { IOrderForm, IProduct } from './types';
 import { AppState } from './components/AppState';
-import { Order } from './components/Order'
+import { Order } from './components/view/Order'
 import { Contacts } from './components/view/Contacts';
-import { Success } from './components/Success';
+import { Success } from './components/view/Success';
 
 const events = new EventEmitter();
 const api = new StoreAPI(CDN_URL, API_URL);
@@ -54,19 +54,21 @@ events.on('products:loaded', () => {
 	page.render({ catalog: cardsArray });
 });
 
-events.on('product:select', (data: { card: IProduct }) => {
-	const card = new Card(cloneTemplate(cardPreviewTemplate), events);
-	card.render(data.card);
-	card.inBasket = appState.basket.includes(data.card.id);
-	modal.render({ content: card.render() });
+events.on('product:select', (data: { id: string }) => {
+  const product = appState.catalog.find(item => item.id === data.id);
+  if (!product) return;
+  const card = new Card(cloneTemplate(cardPreviewTemplate), events);
+  card.render(product);
+  card.inBasket = appState.basket.includes(product.id);
+  modal.render({ content: card.render() });
 });
 
-events.on('product:add', (data: { card: IProduct }) => {
-	appState.addToBasket(data.card.id);
+events.on('product:add', (data: { id: string }) => {
+	appState.addToBasket(data.id);
 });
 
-events.on('product:remove', (data: { card: IProduct }) => {
-	appState.removeFromBasket(data.card.id);
+events.on('product:remove', (data: { id: string }) => {
+	appState.removeFromBasket(data.id);
 })
 
 events.on('basket:changed', (basketItems: IProduct[]) => {
@@ -96,7 +98,6 @@ events.on('order:success', () => {
         onClick: () => {
           modal.close();
           appState.clearBasket();
-          events.emit('basket:changed', []);
         }
       }, events);
       modal.render({

@@ -1,8 +1,7 @@
 import { Form } from "./Form";
-import { IOrderForm, TFormErrors } from "../types";
-import { EventEmitter } from "./base/events";
-import { ensureElement } from "../utils/utils";
-import { AppState } from "./AppState";
+import { IOrderForm, TFormErrors } from "../../types";
+import { EventEmitter } from "../base/events";
+import { ensureElement } from "../../utils/utils";
 
 export class Order extends Form<IOrderForm> {
   protected _cardPaymentButton: HTMLButtonElement;
@@ -10,7 +9,6 @@ export class Order extends Form<IOrderForm> {
   protected _submit: HTMLButtonElement;
   protected _address: HTMLInputElement;
   protected _errors: HTMLElement;
-  protected _appState: AppState;
 
   constructor(container: HTMLFormElement, events: EventEmitter) {
     super(container, events);

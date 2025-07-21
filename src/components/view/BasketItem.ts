@@ -4,11 +4,11 @@ import { Component } from "../base/component";
 import { ensureElement } from "../../utils/utils";
 
 export class BasketItem extends Component<IProduct> {
+  protected _id: string;
   protected _index: HTMLElement;
   protected _title: HTMLElement;
   protected _price: HTMLElement;
   protected _deleteButton: HTMLButtonElement;
-  public id: string;
 
   constructor(container: HTMLElement, protected events: EventEmitter) {
     super(container);
@@ -22,9 +22,16 @@ export class BasketItem extends Component<IProduct> {
       this._deleteButton.addEventListener('click', (event: Event) => {
         event.preventDefault();
         event.stopPropagation();
-        this.events.emit('product:remove', { card: { id: this.id } });
+        this.events.emit('product:remove', { id: this._id });
       })
     }
+  }
+
+  set id(value: string) {
+    this._id = value;
+  }
+  get id(): string {
+    return this._id;
   }
 
   set index(value: number) {

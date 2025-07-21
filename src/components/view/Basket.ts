@@ -39,13 +39,13 @@ export class Basket extends Component<IBasketView> {
 
     set selected(items: string[]) {
         if (items.length) {
-            this.setDisabled(this._button, false);
+            this.setDisabled(this._button, items.length === 0);
         } else {
             this.setDisabled(this._button, true);
         }
     }
 
     set total(total: TPrice) {
-        this.setText(this._total, formatNumber(total));
+        this.setText(this._total, `${formatNumber(total)} синапсов`);
     }
 }

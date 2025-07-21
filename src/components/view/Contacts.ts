@@ -1,14 +1,12 @@
-import { Form } from "../Form";
+import { Form } from "./Form";
 import { EventEmitter } from "../base/events";
 import { IOrderForm, TFormErrors } from "../../types";
 import { ensureElement } from "../../utils/utils";
-import { AppState } from "../AppState";
 
 export class Contacts extends Form<IOrderForm> {
   protected _phone: HTMLInputElement;
   protected _email: HTMLInputElement;
   protected _errors: HTMLElement;
-  protected _appState: AppState;
   protected _submit: HTMLButtonElement;
 
   constructor(container: HTMLFormElement, events: EventEmitter) {
@@ -36,11 +34,9 @@ export class Contacts extends Form<IOrderForm> {
       }
     });
 
-    this._submit.addEventListener('click', (event: Event) => {
+    this.container.addEventListener('submit', (event: Event) => {
       event.preventDefault();
-      if (!this._submit.disabled) {
-        events.emit('order:success');
-      }
+      events.emit('order:success');
     });
   }
 
