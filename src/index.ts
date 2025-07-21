@@ -109,12 +109,12 @@ events.on('order:success', () => {
     });
 });
 
-events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
-	const orderErrors = { address: errors.address, payment: errors.payment };
+events.on('formErrors:change', (data: { errors: Partial<IOrderForm> }) => {
+	const orderErrors = { address: data.errors.address, payment: data.errors.payment };
 	order.valid = !orderErrors.address && !orderErrors.payment;
 	order.errors = Object.values(orderErrors).filter(i => !!i).join('; ');
 
-	const contactsErrors = { email: errors.email, phone: errors.phone };
+	const contactsErrors = { email: data.errors.email, phone: data.errors.phone };
 	contacts.valid = !contactsErrors.email && !contactsErrors.phone;
 	contacts.errors = Object.values(contactsErrors).filter(i => !!i).join('; ');
 });

@@ -71,7 +71,7 @@ export class AppState implements IAppState {
       }
 
       this.formErrors = errors;
-      this.events.emit('formErrors:change', this.formErrors);
+      this.events.emit('formErrors:change', { errors: this.formErrors });
 
       return Object.keys(errors).length === 0;
   }
