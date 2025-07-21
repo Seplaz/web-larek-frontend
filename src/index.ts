@@ -93,7 +93,7 @@ events.on('order:success', () => {
   appState.setOrderItems();
   const orderToSend = appState.getOrderToSend();
   api.sendOrder(orderToSend)
-    .then((result) => {
+    .then(() => {
       const success = new Success(cloneTemplate(successTemplate), {
         onClick: () => {
           modal.close();
